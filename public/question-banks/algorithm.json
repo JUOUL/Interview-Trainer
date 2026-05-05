@@ -1,0 +1,569 @@
+{
+    "id": "algorithm",
+    "name": "算法与数据结构",
+    "description": "面向校招和实习面试的算法高频题库，覆盖复杂度分析、数组、链表、栈队列、哈希表、双指针、滑动窗口、二分查找、排序、堆、二叉树、图、动态规划、贪心、回溯、并查集、LRU 与 TopK 等核心题型。",
+    "questions": [
+        {
+            "id": "algorithm-001",
+            "question": "时间复杂度和空间复杂度是什么？如何分析？",
+            "answer": "时间复杂度用于描述算法运行时间随输入规模增长的趋势，空间复杂度用于描述算法额外占用空间随输入规模增长的趋势。\n\n常见时间复杂度从低到高：\n1. O(1)：常数时间。\n2. O(log n)：二分查找。\n3. O(n)：一次遍历。\n4. O(n log n)：常见高效排序，例如归并排序、堆排序。\n5. O(n²)：双重循环。\n6. O(2^n)：子集枚举、部分递归搜索。\n7. O(n!)：全排列。\n\n分析方法：\n1. 看循环执行次数。\n2. 看递归调用规模和次数。\n3. 忽略常数项和低阶项。\n4. 关注最坏情况、平均情况和最好情况。\n\n面试重点：复杂度分析不是计算精确运行时间，而是分析增长趋势。",
+            "difficulty": "easy",
+            "tags": [
+                "复杂度",
+                "时间复杂度",
+                "空间复杂度"
+            ]
+        },
+        {
+            "id": "algorithm-002",
+            "question": "数组和链表有什么区别？",
+            "answer": "数组和链表是两种基础线性结构。\n\n数组：\n1. 内存连续。\n2. 支持 O(1) 随机访问。\n3. 插入删除可能需要移动元素，平均 O(n)。\n4. 缓存局部性好，遍历性能通常较好。\n5. 扩容时可能需要重新分配和复制。\n\n链表：\n1. 内存不连续，通过指针连接。\n2. 随机访问 O(n)。\n3. 已知节点位置时插入删除 O(1)。\n4. 额外存储指针，内存开销更大。\n5. 缓存局部性较差。\n\n面试重点：数组适合随机访问，链表适合频繁插入删除，但前提是已经定位到节点。",
+            "difficulty": "easy",
+            "tags": [
+                "数组",
+                "链表",
+                "线性表"
+            ]
+        },
+        {
+            "id": "algorithm-003",
+            "question": "如何判断链表是否有环？",
+            "answer": "经典做法是快慢指针。\n\n思路：\n1. slow 每次走一步。\n2. fast 每次走两步。\n3. 如果链表有环，fast 最终一定会追上 slow。\n4. 如果 fast 走到 null，说明没有环。\n\n代码思路：\n```java\nboolean hasCycle(ListNode head) {\n    ListNode slow = head, fast = head;\n    while (fast != null && fast.next != null) {\n        slow = slow.next;\n        fast = fast.next.next;\n        if (slow == fast) return true;\n    }\n    return false;\n}\n```\n\n复杂度：\n1. 时间复杂度 O(n)。\n2. 空间复杂度 O(1)。\n\n面试重点：快慢指针是链表环问题最常见解法。",
+            "difficulty": "easy",
+            "tags": [
+                "链表",
+                "快慢指针",
+                "环形链表"
+            ]
+        },
+        {
+            "id": "algorithm-004",
+            "question": "如何找到环形链表的入环节点？",
+            "answer": "先用快慢指针判断是否有环，并找到相遇点。\n\n证明结论：\n当 slow 和 fast 在环内相遇后，让一个指针从 head 出发，另一个指针从相遇点出发，两者每次都走一步，它们再次相遇的位置就是入环节点。\n\n代码思路：\n```java\nListNode detectCycle(ListNode head) {\n    ListNode slow = head, fast = head;\n    while (fast != null && fast.next != null) {\n        slow = slow.next;\n        fast = fast.next.next;\n        if (slow == fast) {\n            ListNode p = head;\n            while (p != slow) {\n                p = p.next;\n                slow = slow.next;\n            }\n            return p;\n        }\n    }\n    return null;\n}\n```\n\n复杂度：\n1. 时间复杂度 O(n)。\n2. 空间复杂度 O(1)。\n\n面试重点：找到相遇点后，head 和 meeting 同步走，相遇处就是入口。",
+            "difficulty": "medium",
+            "tags": [
+                "链表",
+                "环形链表",
+                "快慢指针"
+            ]
+        },
+        {
+            "id": "algorithm-005",
+            "question": "如何反转链表？",
+            "answer": "反转链表是链表基础高频题。\n\n迭代思路：\n1. 用 prev 表示已经反转好的前半部分。\n2. 用 cur 遍历当前节点。\n3. 每次保存 cur.next。\n4. 让 cur.next 指向 prev。\n5. prev 和 cur 向后移动。\n\n代码：\n```java\nListNode reverseList(ListNode head) {\n    ListNode prev = null;\n    ListNode cur = head;\n    while (cur != null) {\n        ListNode next = cur.next;\n        cur.next = prev;\n        prev = cur;\n        cur = next;\n    }\n    return prev;\n}\n```\n\n复杂度：\n1. 时间复杂度 O(n)。\n2. 空间复杂度 O(1)。\n\n面试重点：链表题一定要先保存 next，避免断链后找不到后续节点。",
+            "difficulty": "easy",
+            "tags": [
+                "链表",
+                "反转链表",
+                "指针"
+            ]
+        },
+        {
+            "id": "algorithm-006",
+            "question": "如何合并两个有序链表？",
+            "answer": "可以使用哨兵节点 dummy 简化边界处理。\n\n思路：\n1. 创建 dummy 节点。\n2. 用 cur 指向结果链表尾部。\n3. 比较两个链表当前节点，较小的接到 cur 后面。\n4. 移动对应链表指针。\n5. 最后把剩余链表接上。\n\n代码：\n```java\nListNode mergeTwoLists(ListNode a, ListNode b) {\n    ListNode dummy = new ListNode(0);\n    ListNode cur = dummy;\n    while (a != null && b != null) {\n        if (a.val <= b.val) {\n            cur.next = a;\n            a = a.next;\n        } else {\n            cur.next = b;\n            b = b.next;\n        }\n        cur = cur.next;\n    }\n    cur.next = a != null ? a : b;\n    return dummy.next;\n}\n```\n\n复杂度：时间 O(n + m)，空间 O(1)。\n\n面试重点：dummy 节点可以减少头节点特殊判断。",
+            "difficulty": "easy",
+            "tags": [
+                "链表",
+                "双指针",
+                "哨兵节点"
+            ]
+        },
+        {
+            "id": "algorithm-007",
+            "question": "如何找到链表的中间节点？",
+            "answer": "使用快慢指针。\n\n思路：\n1. slow 每次走一步。\n2. fast 每次走两步。\n3. fast 到达尾部时，slow 正好在中间。\n\n代码：\n```java\nListNode middleNode(ListNode head) {\n    ListNode slow = head, fast = head;\n    while (fast != null && fast.next != null) {\n        slow = slow.next;\n        fast = fast.next.next;\n    }\n    return slow;\n}\n```\n\n如果链表长度为偶数，这种写法返回第二个中间节点。\n\n应用：\n1. 归并排序链表。\n2. 判断回文链表。\n3. 快慢指针类问题。\n\n面试重点：快慢指针适合找中点、找倒数第 k 个、判断环。",
+            "difficulty": "easy",
+            "tags": [
+                "链表",
+                "快慢指针",
+                "中间节点"
+            ]
+        },
+        {
+            "id": "algorithm-008",
+            "question": "如何判断链表是否是回文链表？",
+            "answer": "常见做法：快慢指针 + 反转后半段。\n\n思路：\n1. 用快慢指针找到链表中点。\n2. 反转后半段链表。\n3. 从头节点和后半段头节点开始逐个比较。\n4. 全部相等则是回文。\n\n复杂度：\n1. 时间复杂度 O(n)。\n2. 空间复杂度 O(1)。\n\n注意：\n如果面试要求不改变原链表，比较结束后可以再把后半段反转回来。\n\n面试重点：不要只想到用数组保存值，O(1) 空间解法是反转链表。",
+            "difficulty": "medium",
+            "tags": [
+                "链表",
+                "回文链表",
+                "快慢指针",
+                "反转链表"
+            ]
+        },
+        {
+            "id": "algorithm-009",
+            "question": "栈和队列有什么区别？",
+            "answer": "栈和队列都是线性结构，但出入顺序不同。\n\n栈 Stack：\n1. 后进先出 LIFO。\n2. 只能在栈顶插入和删除。\n3. 常见操作是 push、pop、peek。\n4. 适合括号匹配、函数调用、单调栈、DFS。\n\n队列 Queue：\n1. 先进先出 FIFO。\n2. 队尾入队，队头出队。\n3. 常见操作是 offer、poll、peek。\n4. 适合 BFS、任务排队、生产者消费者。\n\n面试重点：栈解决最近相关问题，队列解决先来先服务问题。",
+            "difficulty": "easy",
+            "tags": [
+                "栈",
+                "队列",
+                "数据结构"
+            ]
+        },
+        {
+            "id": "algorithm-010",
+            "question": "如何用两个栈实现队列？",
+            "answer": "用两个栈：in 栈负责入队，out 栈负责出队。\n\n思路：\n1. 入队时，直接 push 到 in 栈。\n2. 出队时，如果 out 栈不为空，直接 pop。\n3. 如果 out 栈为空，把 in 栈所有元素倒入 out 栈，再 pop。\n4. 这样可以把后进先出转换成先进先出。\n\n复杂度：\n1. 单次操作最坏 O(n)。\n2. 均摊时间复杂度 O(1)，因为每个元素最多进出两个栈各一次。\n\n面试重点：不要每次出队都倒栈，只有 out 为空时才倒。",
+            "difficulty": "medium",
+            "tags": [
+                "栈",
+                "队列",
+                "均摊复杂度"
+            ]
+        },
+        {
+            "id": "algorithm-011",
+            "question": "如何用两个队列实现栈？",
+            "answer": "可以用两个队列实现后进先出。\n\n常见思路：\n1. push 时，把新元素放入空队列 q2。\n2. 再把 q1 中所有元素依次出队放入 q2。\n3. 交换 q1 和 q2。\n4. 这样 q1 的队头永远是最新入栈元素。\n5. pop 时直接 q1.poll()。\n\n复杂度：\n1. push O(n)。\n2. pop O(1)。\n\n也可以反过来让 push O(1)，pop O(n)。\n\n面试重点：两个队列实现栈，本质是通过搬移元素改变出队顺序。",
+            "difficulty": "medium",
+            "tags": [
+                "队列",
+                "栈",
+                "数据结构实现"
+            ]
+        },
+        {
+            "id": "algorithm-012",
+            "question": "如何判断括号字符串是否合法？",
+            "answer": "使用栈。\n\n思路：\n1. 遇到左括号，压栈。\n2. 遇到右括号，检查栈顶是否是对应左括号。\n3. 如果不匹配或栈为空，返回 false。\n4. 遍历结束后，栈为空才合法。\n\n代码思路：\n```java\nboolean isValid(String s) {\n    Deque<Character> stack = new ArrayDeque<>();\n    for (char c : s.toCharArray()) {\n        if (c == '(') stack.push(')');\n        else if (c == '[') stack.push(']');\n        else if (c == '{') stack.push('}');\n        else {\n            if (stack.isEmpty() || stack.pop() != c) return false;\n        }\n    }\n    return stack.isEmpty();\n}\n```\n\n面试重点：栈适合处理“最近打开的东西必须最先关闭”的问题。",
+            "difficulty": "easy",
+            "tags": [
+                "栈",
+                "括号匹配",
+                "字符串"
+            ]
+        },
+        {
+            "id": "algorithm-013",
+            "question": "什么是单调栈？适合解决什么问题？",
+            "answer": "单调栈是栈内元素保持单调递增或单调递减的栈。\n\n适合问题：\n1. 找下一个更大元素。\n2. 找下一个更小元素。\n3. 每日温度。\n4. 柱状图最大矩形。\n5. 接雨水部分解法。\n\n典型思路：\n1. 遍历数组。\n2. 当前元素破坏栈内单调性时，不断弹栈。\n3. 被弹出的元素通常可以确定自己的答案。\n4. 当前元素入栈。\n\n例子：找右侧第一个更大元素，可以维护单调递减栈。当前元素比栈顶大时，说明当前元素就是栈顶元素的下一个更大元素。\n\n面试重点：单调栈用于“找某个元素左右第一个更大/更小元素”。",
+            "difficulty": "medium",
+            "tags": [
+                "单调栈",
+                "下一个更大元素",
+                "数组"
+            ]
+        },
+        {
+            "id": "algorithm-014",
+            "question": "什么是单调队列？适合解决什么问题？",
+            "answer": "单调队列是队列中的元素保持单调性，常用于滑动窗口最大值或最小值。\n\n以滑动窗口最大值为例：\n1. 队列中保存数组下标。\n2. 队列对应的值保持从大到小。\n3. 新元素进入时，把队尾所有比它小的元素弹出。\n4. 队头如果滑出窗口，就弹出队头。\n5. 每个窗口最大值就是队头对应元素。\n\n复杂度：\n每个元素最多入队一次、出队一次，因此总时间 O(n)。\n\n面试重点：单调队列常用于固定窗口内最大值/最小值问题。",
+            "difficulty": "medium",
+            "tags": [
+                "单调队列",
+                "滑动窗口",
+                "最大值"
+            ]
+        },
+        {
+            "id": "algorithm-015",
+            "question": "哈希表适合解决什么问题？",
+            "answer": "哈希表适合快速判断一个元素是否存在、统计频次、建立映射关系。\n\n常见场景：\n1. 两数之和。\n2. 字母异位词。\n3. 数组去重。\n4. 统计字符频次。\n5. LRU 缓存中 key 到节点的映射。\n6. 前缀和 + 哈希表统计子数组数量。\n\n优势：\n1. 平均 O(1) 查询、插入、删除。\n2. 能把很多 O(n²) 暴力枚举优化到 O(n)。\n\n注意：\n1. 哈希冲突会影响性能。\n2. key 要正确实现 equals 和 hashCode。\n3. 空间换时间。\n\n面试重点：看到“快速查找是否出现过”，优先想到哈希表。",
+            "difficulty": "easy",
+            "tags": [
+                "哈希表",
+                "频次统计",
+                "映射"
+            ]
+        },
+        {
+            "id": "algorithm-016",
+            "question": "两数之和如何实现？",
+            "answer": "用哈希表一遍遍历即可。\n\n思路：\n1. 遍历数组 nums[i]。\n2. 计算 target - nums[i]。\n3. 如果哈希表中已经有这个数，直接返回两个下标。\n4. 否则把 nums[i] 和下标 i 放入哈希表。\n\n代码思路：\n```java\nint[] twoSum(int[] nums, int target) {\n    Map<Integer, Integer> map = new HashMap<>();\n    for (int i = 0; i < nums.length; i++) {\n        int need = target - nums[i];\n        if (map.containsKey(need)) {\n            return new int[]{map.get(need), i};\n        }\n        map.put(nums[i], i);\n    }\n    return new int[0];\n}\n```\n\n复杂度：\n1. 时间 O(n)。\n2. 空间 O(n)。\n\n面试重点：哈希表把“找另一个数”从 O(n) 降到 O(1)。",
+            "difficulty": "easy",
+            "tags": [
+                "哈希表",
+                "数组",
+                "两数之和"
+            ]
+        },
+        {
+            "id": "algorithm-017",
+            "question": "前缀和适合解决什么问题？",
+            "answer": "前缀和适合快速计算区间和。\n\n定义：\n```text\nprefix[i] = nums[0] + nums[1] + ... + nums[i - 1]\n```\n区间 `[l, r]` 的和为：\n```text\nprefix[r + 1] - prefix[l]\n```\n\n适合场景：\n1. 多次查询数组区间和。\n2. 子数组和等于 k。\n3. 二维矩阵区域和。\n4. 差分数组结合区间更新。\n\n进阶：\n前缀和 + 哈希表可以统计满足条件的子数组数量。例如统计和为 k 的子数组个数。\n\n面试重点：连续子数组求和问题，优先考虑前缀和。",
+            "difficulty": "easy",
+            "tags": [
+                "前缀和",
+                "数组",
+                "区间和"
+            ]
+        },
+        {
+            "id": "algorithm-018",
+            "question": "如何统计和为 k 的连续子数组个数？",
+            "answer": "使用前缀和 + 哈希表。\n\n思路：\n1. 设当前前缀和为 sum。\n2. 如果存在之前的前缀和 old，使得 sum - old = k，那么从 old 后面到当前位置的子数组和就是 k。\n3. 所以需要统计每个前缀和出现次数。\n\n代码思路：\n```java\nint subarraySum(int[] nums, int k) {\n    Map<Integer, Integer> map = new HashMap<>();\n    map.put(0, 1);\n    int sum = 0, ans = 0;\n    for (int x : nums) {\n        sum += x;\n        ans += map.getOrDefault(sum - k, 0);\n        map.put(sum, map.getOrDefault(sum, 0) + 1);\n    }\n    return ans;\n}\n```\n\n为什么不能简单滑动窗口：\n数组可能有负数，窗口和不具备单调性。\n\n面试重点：有负数的连续子数组和问题，常用前缀和 + 哈希表。",
+            "difficulty": "medium",
+            "tags": [
+                "前缀和",
+                "哈希表",
+                "子数组"
+            ]
+        },
+        {
+            "id": "algorithm-019",
+            "question": "双指针适合解决什么问题？",
+            "answer": "双指针适合在数组、链表、字符串中通过两个位置协同移动来降低复杂度。\n\n常见类型：\n1. 对撞指针：左右指针向中间移动。\n   - 适合有序数组两数之和、盛最多水的容器、回文判断。\n\n2. 快慢指针：两个指针速度不同。\n   - 适合链表找中点、判断环、删除倒数第 k 个节点。\n\n3. 同向指针：两个指针同方向移动。\n   - 适合滑动窗口、去重、合并数组。\n\n面试重点：数组有序时，双指针常常能把 O(n²) 优化到 O(n)。",
+            "difficulty": "easy",
+            "tags": [
+                "双指针",
+                "数组",
+                "链表",
+                "字符串"
+            ]
+        },
+        {
+            "id": "algorithm-020",
+            "question": "滑动窗口适合解决什么问题？",
+            "answer": "滑动窗口适合解决连续子数组或子字符串问题。\n\n典型特征：\n1. 问题和连续区间有关。\n2. 需要求最长、最短、个数或最大值。\n3. 可以通过移动左右边界维护窗口状态。\n\n常见题型：\n1. 无重复字符的最长子串。\n2. 最小覆盖子串。\n3. 长度最小的子数组。\n4. 滑动窗口最大值。\n5. 字符串排列包含问题。\n\n基本模板：\n1. right 扩大窗口。\n2. 更新窗口内状态。\n3. 当窗口不满足条件时，left 收缩窗口。\n4. 在合适时机更新答案。\n\n注意：\n如果窗口状态不具备单调性，例如数组中有负数的子数组和，滑动窗口可能不适用。\n\n面试重点：看到连续区间 + 左右边界可移动，优先考虑滑动窗口。",
+            "difficulty": "medium",
+            "tags": [
+                "滑动窗口",
+                "双指针",
+                "字符串",
+                "数组"
+            ]
+        },
+        {
+            "id": "algorithm-021",
+            "question": "如何求无重复字符的最长子串？",
+            "answer": "使用滑动窗口 + 哈希集合或哈希表。\n\n思路：\n1. right 指针不断向右扩展。\n2. 用集合维护窗口内字符。\n3. 如果新字符已经存在，就移动 left，直到窗口内没有重复。\n4. 每次窗口合法时更新最大长度。\n\n代码思路：\n```java\nint lengthOfLongestSubstring(String s) {\n    Set<Character> set = new HashSet<>();\n    int left = 0, ans = 0;\n    for (int right = 0; right < s.length(); right++) {\n        char c = s.charAt(right);\n        while (set.contains(c)) {\n            set.remove(s.charAt(left++));\n        }\n        set.add(c);\n        ans = Math.max(ans, right - left + 1);\n    }\n    return ans;\n}\n```\n\n复杂度：时间 O(n)，空间 O(字符集大小)。\n\n面试重点：窗口内维护“无重复”这个条件。",
+            "difficulty": "medium",
+            "tags": [
+                "滑动窗口",
+                "字符串",
+                "哈希表"
+            ]
+        },
+        {
+            "id": "algorithm-022",
+            "question": "二分查找的前提是什么？常见坑有哪些？",
+            "answer": "二分查找的前提是搜索空间具有单调性。\n\n常见场景：\n1. 有序数组中查找目标值。\n2. 查找第一个大于等于 target 的位置。\n3. 查找满足条件的最小值或最大值。\n4. 在答案范围上二分。\n\n常见坑：\n1. while 条件写错，导致死循环。\n2. mid 计算溢出，应写 `left + (right - left) / 2`。\n3. 边界更新错误。\n4. 不清楚查找的是具体值、左边界还是右边界。\n5. 搜索区间是左闭右闭还是左闭右开不统一。\n\n面试重点：二分不是只能用于数组，只要答案空间单调，也可以二分答案。",
+            "difficulty": "medium",
+            "tags": [
+                "二分查找",
+                "单调性",
+                "边界"
+            ]
+        },
+        {
+            "id": "algorithm-023",
+            "question": "如何用二分查找第一个大于等于 target 的位置？",
+            "answer": "这是 lower_bound 问题。\n\n使用左闭右开区间 `[left, right)`：\n```java\nint lowerBound(int[] nums, int target) {\n    int left = 0, right = nums.length;\n    while (left < right) {\n        int mid = left + (right - left) / 2;\n        if (nums[mid] >= target) {\n            right = mid;\n        } else {\n            left = mid + 1;\n        }\n    }\n    return left;\n}\n```\n\n含义：\n1. 如果 nums[mid] >= target，说明答案可能是 mid 或更左边，所以 right = mid。\n2. 如果 nums[mid] < target，说明 mid 不可能是答案，所以 left = mid + 1。\n\n返回值：\n1. 如果返回 nums.length，说明所有元素都小于 target。\n2. 否则 nums[left] 就是第一个大于等于 target 的元素。\n\n面试重点：边界题建议固定一种模板，不要每次临时改。",
+            "difficulty": "medium",
+            "tags": [
+                "二分查找",
+                "lower_bound",
+                "边界"
+            ]
+        },
+        {
+            "id": "algorithm-024",
+            "question": "如何在旋转有序数组中查找目标值？",
+            "answer": "旋转有序数组仍然可以二分，因为每次至少有一半区间是有序的。\n\n思路：\n1. 计算 mid。\n2. 如果 nums[mid] == target，返回 mid。\n3. 判断左半部分是否有序：`nums[left] <= nums[mid]`。\n4. 如果左半部分有序，判断 target 是否在 `[nums[left], nums[mid])` 中。\n5. 如果在，就搜索左半边，否则搜索右半边。\n6. 如果右半部分有序，同理判断。\n\n复杂度：O(log n)。\n\n注意：\n如果数组中有大量重复元素，判断哪边有序会变复杂，最坏情况可能退化到 O(n)。\n\n面试重点：旋转数组二分的关键是判断哪一半有序。",
+            "difficulty": "medium",
+            "tags": [
+                "二分查找",
+                "旋转数组",
+                "有序数组"
+            ]
+        },
+        {
+            "id": "algorithm-025",
+            "question": "快速排序的思想是什么？时间复杂度是多少？",
+            "answer": "快速排序使用分治思想。\n\n基本过程：\n1. 选择一个基准值 pivot。\n2. 通过 partition 把数组分成两部分。\n3. 左边元素都小于等于 pivot，右边元素都大于等于 pivot。\n4. 递归排序左右两部分。\n\n复杂度：\n1. 平均时间复杂度 O(n log n)。\n2. 最坏时间复杂度 O(n²)，例如每次 pivot 都选到最大或最小值。\n3. 空间复杂度平均 O(log n)，来自递归栈。\n\n优化：\n1. 随机选择 pivot。\n2. 三数取中。\n3. 小数组使用插入排序。\n4. 三路快排处理大量重复元素。\n\n面试重点：快排平均很快，但最坏 O(n²)，随机化 pivot 可以降低最坏情况概率。",
+            "difficulty": "medium",
+            "tags": [
+                "快速排序",
+                "分治",
+                "partition"
+            ]
+        },
+        {
+            "id": "algorithm-026",
+            "question": "归并排序的思想是什么？为什么它是稳定排序？",
+            "answer": "归并排序使用分治思想。\n\n过程：\n1. 把数组不断一分为二。\n2. 分别排序左右两部分。\n3. 合并两个有序数组。\n\n复杂度：\n1. 时间复杂度稳定 O(n log n)。\n2. 空间复杂度 O(n)。\n\n为什么稳定：\n在合并两个有序数组时，如果左右两边元素相等，优先取左边元素，就可以保持相同元素的原始相对顺序。\n\n适合场景：\n1. 链表排序。\n2. 外部排序。\n3. 需要稳定排序的场景。\n4. 求逆序对。\n\n面试重点：归并排序时间稳定，但需要额外空间。",
+            "difficulty": "medium",
+            "tags": [
+                "归并排序",
+                "稳定排序",
+                "分治"
+            ]
+        },
+        {
+            "id": "algorithm-027",
+            "question": "常见排序算法的时间复杂度和稳定性如何？",
+            "answer": "常见排序算法：\n\n1. 冒泡排序：平均 O(n²)，稳定。\n2. 选择排序：平均 O(n²)，不稳定。\n3. 插入排序：平均 O(n²)，稳定；近乎有序时表现好。\n4. 希尔排序：复杂度和步长有关，不稳定。\n5. 归并排序：O(n log n)，稳定，需要 O(n) 空间。\n6. 快速排序：平均 O(n log n)，最坏 O(n²)，不稳定。\n7. 堆排序：O(n log n)，不稳定，空间 O(1)。\n8. 计数排序：O(n + k)，稳定，适合数据范围小。\n9. 桶排序：平均接近 O(n)，依赖数据分布。\n10. 基数排序：O(d(n + k))，稳定，适合整数或字符串。\n\n面试重点：稳定排序常见有冒泡、插入、归并、计数、基数；快排和堆排不稳定。",
+            "difficulty": "medium",
+            "tags": [
+                "排序算法",
+                "时间复杂度",
+                "稳定性"
+            ]
+        },
+        {
+            "id": "algorithm-028",
+            "question": "如何求数组中的第 K 大元素？",
+            "answer": "常见解法有堆和快速选择。\n\n方法一：小顶堆。\n1. 维护一个大小为 k 的小顶堆。\n2. 遍历数组。\n3. 堆大小小于 k 时入堆。\n4. 如果当前元素大于堆顶，弹出堆顶并加入当前元素。\n5. 最后堆顶就是第 k 大。\n\n复杂度：O(n log k)，适合数据流。\n\n方法二：快速选择。\n1. 借鉴快排 partition。\n2. 每次确定 pivot 的最终位置。\n3. 根据位置只递归一边。\n\n平均复杂度 O(n)，最坏 O(n²)。\n\n面试重点：TopK 小规模用堆，数组内找第 K 大常用快速选择。",
+            "difficulty": "medium",
+            "tags": [
+                "TopK",
+                "堆",
+                "快速选择"
+            ]
+        },
+        {
+            "id": "algorithm-029",
+            "question": "堆是什么？大顶堆和小顶堆有什么区别？",
+            "answer": "堆通常是用数组实现的完全二叉树。\n\n大顶堆：\n1. 每个节点都大于等于它的子节点。\n2. 堆顶是最大值。\n3. 适合快速获取最大元素。\n\n小顶堆：\n1. 每个节点都小于等于它的子节点。\n2. 堆顶是最小值。\n3. 适合快速获取最小元素。\n\n常见操作：\n1. 插入元素：O(log n)。\n2. 删除堆顶：O(log n)。\n3. 获取堆顶：O(1)。\n4. 建堆：O(n)。\n\n常见场景：\n1. TopK。\n2. 优先队列。\n3. 合并 k 个有序链表。\n4. 任务调度。\n\n面试重点：堆适合动态维护最大值或最小值。",
+            "difficulty": "easy",
+            "tags": [
+                "堆",
+                "优先队列",
+                "TopK"
+            ]
+        },
+        {
+            "id": "algorithm-030",
+            "question": "如何合并 K 个有序链表？",
+            "answer": "常见解法是小顶堆或分治。\n\n方法一：小顶堆。\n1. 把每个链表的头节点放入小顶堆。\n2. 每次弹出堆中最小节点，接到结果链表。\n3. 如果弹出节点有 next，就把 next 放入堆。\n4. 直到堆为空。\n\n复杂度：\n1. 假设总节点数为 N，链表个数为 k。\n2. 时间复杂度 O(N log k)。\n3. 空间复杂度 O(k)。\n\n方法二：分治合并。\n1. 两两合并链表。\n2. 类似归并排序。\n3. 时间复杂度 O(N log k)。\n\n面试重点：多个有序结构合并，优先考虑堆或分治。",
+            "difficulty": "hard",
+            "tags": [
+                "链表",
+                "堆",
+                "分治",
+                "合并K个链表"
+            ]
+        },
+        {
+            "id": "algorithm-031",
+            "question": "二叉树前序、中序、后序遍历分别是什么？",
+            "answer": "三种 DFS 遍历方式：\n\n1. 前序遍历：根 -> 左 -> 右。\n常用于复制树、序列化树。\n\n2. 中序遍历：左 -> 根 -> 右。\n二叉搜索树的中序遍历是有序序列。\n\n3. 后序遍历：左 -> 右 -> 根。\n常用于删除树、计算子树信息。\n\n递归模板：\n```java\nvoid dfs(TreeNode root) {\n    if (root == null) return;\n    // 前序位置\n    dfs(root.left);\n    // 中序位置\n    dfs(root.right);\n    // 后序位置\n}\n```\n\n面试重点：前中后指的是根节点被访问的位置。",
+            "difficulty": "easy",
+            "tags": [
+                "二叉树",
+                "DFS",
+                "前序遍历",
+                "中序遍历",
+                "后序遍历"
+            ]
+        },
+        {
+            "id": "algorithm-032",
+            "question": "如何层序遍历二叉树？",
+            "answer": "层序遍历使用队列，也就是 BFS。\n\n思路：\n1. 根节点入队。\n2. 每次处理一层。\n3. 记录当前队列大小 size。\n4. 循环 size 次，依次弹出当前层节点。\n5. 把左右子节点加入队列。\n\n代码思路：\n```java\nList<List<Integer>> levelOrder(TreeNode root) {\n    List<List<Integer>> res = new ArrayList<>();\n    if (root == null) return res;\n    Queue<TreeNode> q = new LinkedList<>();\n    q.offer(root);\n    while (!q.isEmpty()) {\n        int size = q.size();\n        List<Integer> level = new ArrayList<>();\n        for (int i = 0; i < size; i++) {\n            TreeNode node = q.poll();\n            level.add(node.val);\n            if (node.left != null) q.offer(node.left);\n            if (node.right != null) q.offer(node.right);\n        }\n        res.add(level);\n    }\n    return res;\n}\n```\n\n面试重点：BFS 按层处理时，要先记录当前层 size。",
+            "difficulty": "easy",
+            "tags": [
+                "二叉树",
+                "BFS",
+                "层序遍历",
+                "队列"
+            ]
+        },
+        {
+            "id": "algorithm-033",
+            "question": "如何判断一棵树是否是二叉搜索树？",
+            "answer": "二叉搜索树 BST 的性质：左子树所有节点值小于根节点，右子树所有节点值大于根节点，并且左右子树也都是 BST。\n\n常见解法一：中序遍历。\n1. BST 中序遍历应该是严格递增序列。\n2. 遍历时记录前一个节点值。\n3. 如果当前值小于等于前一个值，则不是 BST。\n\n常见解法二：递归上下界。\n1. 每个节点都有允许范围 `(lower, upper)`。\n2. 左子树上界是当前节点值。\n3. 右子树下界是当前节点值。\n\n面试重点：不能只判断 root.left < root < root.right，还要保证整棵左子树和右子树都满足范围约束。",
+            "difficulty": "medium",
+            "tags": [
+                "二叉搜索树",
+                "中序遍历",
+                "递归"
+            ]
+        },
+        {
+            "id": "algorithm-034",
+            "question": "如何求二叉树的最大深度？",
+            "answer": "可以使用递归 DFS。\n\n思路：\n1. 空树深度为 0。\n2. 非空树深度 = max(左子树深度, 右子树深度) + 1。\n\n代码：\n```java\nint maxDepth(TreeNode root) {\n    if (root == null) return 0;\n    return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;\n}\n```\n\n也可以用 BFS 层序遍历，每遍历一层深度加 1。\n\n复杂度：\n1. 时间复杂度 O(n)。\n2. 空间复杂度递归最坏 O(n)，平衡树 O(log n)。\n\n面试重点：树的很多问题可以拆成“当前节点 + 左右子树结果”。",
+            "difficulty": "easy",
+            "tags": [
+                "二叉树",
+                "DFS",
+                "递归",
+                "最大深度"
+            ]
+        },
+        {
+            "id": "algorithm-035",
+            "question": "如何判断二叉树是否平衡？",
+            "answer": "平衡二叉树要求任意节点的左右子树高度差不超过 1。\n\n高效做法是后序遍历，自底向上判断。\n\n思路：\n1. 递归计算左右子树高度。\n2. 如果某个子树已经不平衡，直接返回 -1。\n3. 如果左右高度差超过 1，也返回 -1。\n4. 否则返回当前子树高度。\n\n代码思路：\n```java\nboolean isBalanced(TreeNode root) {\n    return height(root) != -1;\n}\n\nint height(TreeNode root) {\n    if (root == null) return 0;\n    int left = height(root.left);\n    if (left == -1) return -1;\n    int right = height(root.right);\n    if (right == -1) return -1;\n    if (Math.abs(left - right) > 1) return -1;\n    return Math.max(left, right) + 1;\n}\n```\n\n面试重点：自底向上避免重复计算高度。",
+            "difficulty": "medium",
+            "tags": [
+                "二叉树",
+                "平衡二叉树",
+                "后序遍历"
+            ]
+        },
+        {
+            "id": "algorithm-036",
+            "question": "如何求二叉树的最近公共祖先？",
+            "answer": "普通二叉树的最近公共祖先可以用递归。\n\n思路：\n1. 如果 root 为 null，返回 null。\n2. 如果 root 等于 p 或 q，返回 root。\n3. 分别在左子树和右子树中查找 p、q。\n4. 如果左右都不为空，说明 p 和 q 分别在两侧，root 就是最近公共祖先。\n5. 如果只有一边不为空，返回那一边。\n\n代码思路：\n```java\nTreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n    if (root == null || root == p || root == q) return root;\n    TreeNode left = lowestCommonAncestor(root.left, p, q);\n    TreeNode right = lowestCommonAncestor(root.right, p, q);\n    if (left != null && right != null) return root;\n    return left != null ? left : right;\n}\n```\n\n面试重点：后序思想，先问左右子树有没有目标节点，再决定当前节点是不是答案。",
+            "difficulty": "medium",
+            "tags": [
+                "二叉树",
+                "最近公共祖先",
+                "递归"
+            ]
+        },
+        {
+            "id": "algorithm-037",
+            "question": "二叉搜索树的最近公共祖先怎么求？",
+            "answer": "利用 BST 的有序性质。\n\n设当前节点为 root：\n1. 如果 p 和 q 的值都小于 root，说明 LCA 在左子树。\n2. 如果 p 和 q 的值都大于 root，说明 LCA 在右子树。\n3. 否则 root 就是分叉点，也就是最近公共祖先。\n\n代码思路：\n```java\nTreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n    while (root != null) {\n        if (p.val < root.val && q.val < root.val) {\n            root = root.left;\n        } else if (p.val > root.val && q.val > root.val) {\n            root = root.right;\n        } else {\n            return root;\n        }\n    }\n    return null;\n}\n```\n\n复杂度：\n1. 平均 O(log n)。\n2. 最坏退化为 O(n)。\n\n面试重点：BST 题要优先利用中序有序和左右大小关系。",
+            "difficulty": "medium",
+            "tags": [
+                "二叉搜索树",
+                "最近公共祖先",
+                "BST"
+            ]
+        },
+        {
+            "id": "algorithm-038",
+            "question": "DFS 和 BFS 有什么区别？",
+            "answer": "DFS 是深度优先搜索，BFS 是广度优先搜索。\n\nDFS：\n1. 一条路走到底，再回溯。\n2. 常用递归或栈实现。\n3. 适合路径搜索、连通性、回溯、树遍历。\n4. 空间复杂度和递归深度有关。\n\nBFS：\n1. 一层一层向外扩展。\n2. 常用队列实现。\n3. 适合最短路径，前提是边权相同。\n4. 空间复杂度可能较高，需要保存一层节点。\n\n典型应用：\n1. DFS：全排列、组合、岛屿数量、树遍历。\n2. BFS：二叉树层序遍历、无权图最短路径、最短单词转换。\n\n面试重点：无权图最短路径优先 BFS，枚举所有方案常用 DFS/回溯。",
+            "difficulty": "easy",
+            "tags": [
+                "DFS",
+                "BFS",
+                "搜索"
+            ]
+        },
+        {
+            "id": "algorithm-039",
+            "question": "回溯算法是什么？通用模板是什么？",
+            "answer": "回溯是 DFS 的一种，用于枚举所有可能解，并在不满足条件时撤销选择返回上一层。\n\n常见题型：\n1. 全排列。\n2. 组合。\n3. 子集。\n4. N 皇后。\n5. 括号生成。\n6. 数独。\n\n通用模板：\n```java\nvoid backtrack(路径, 选择列表) {\n    if (满足结束条件) {\n        收集结果;\n        return;\n    }\n    for (选择 : 选择列表) {\n        做选择;\n        backtrack(路径, 新选择列表);\n        撤销选择;\n    }\n}\n```\n\n关键点：\n1. 路径表示当前已经选择的内容。\n2. 选择列表表示还能选择什么。\n3. 结束条件决定何时收集结果。\n4. 做选择和撤销选择必须成对出现。\n\n面试重点：回溯本质是“试错 + 撤销”。",
+            "difficulty": "medium",
+            "tags": [
+                "回溯",
+                "DFS",
+                "全排列",
+                "组合"
+            ]
+        },
+        {
+            "id": "algorithm-040",
+            "question": "排列、组合、子集问题有什么区别？",
+            "answer": "三类问题区别：\n\n1. 排列：关注顺序。\n例如 `[1,2]` 和 `[2,1]` 是不同结果。\n通常需要 used 数组标记元素是否用过。\n\n2. 组合：不关注顺序，只关注选了哪些元素。\n例如 `[1,2]` 和 `[2,1]` 是同一个结果。\n通常使用 startIndex 防止重复选择前面的元素。\n\n3. 子集：枚举所有可能选法。\n每个元素可以选或不选，也可以用 startIndex 逐步扩展。\n\n去重技巧：\n1. 排序。\n2. 同一层跳过重复元素。\n3. 注意是树层去重还是树枝去重。\n\n面试重点：排列用 used，组合和子集常用 startIndex。",
+            "difficulty": "medium",
+            "tags": [
+                "回溯",
+                "排列",
+                "组合",
+                "子集"
+            ]
+        },
+        {
+            "id": "algorithm-041",
+            "question": "动态规划适合解决什么问题？",
+            "answer": "动态规划适合解决具有重叠子问题和最优子结构的问题。\n\n两个核心特征：\n1. 重叠子问题：递归过程中会重复计算相同子问题。\n2. 最优子结构：大问题的最优解可以由小问题的最优解推出。\n\n常见题型：\n1. 爬楼梯。\n2. 背包问题。\n3. 最长递增子序列。\n4. 最长公共子序列。\n5. 编辑距离。\n6. 打家劫舍。\n7. 股票买卖。\n8. 路径计数。\n\n解题步骤：\n1. 定义 dp 数组含义。\n2. 写状态转移方程。\n3. 确定初始化。\n4. 确定遍历顺序。\n5. 返回答案。\n\n面试重点：DP 最重要的是定义状态和状态转移。",
+            "difficulty": "medium",
+            "tags": [
+                "动态规划",
+                "重叠子问题",
+                "最优子结构"
+            ]
+        },
+        {
+            "id": "algorithm-042",
+            "question": "爬楼梯问题为什么是动态规划？",
+            "answer": "爬楼梯问题：每次可以爬 1 阶或 2 阶，问爬到第 n 阶有多少种方法。\n\n状态定义：\n`dp[i]` 表示爬到第 i 阶的方法数。\n\n状态转移：\n要到第 i 阶，最后一步可能是：\n1. 从 i - 1 阶爬 1 阶。\n2. 从 i - 2 阶爬 2 阶。\n所以：\n```text\ndp[i] = dp[i - 1] + dp[i - 2]\n```\n\n初始化：\n1. dp[1] = 1。\n2. dp[2] = 2。\n\n复杂度：\n1. 时间 O(n)。\n2. 空间可以优化到 O(1)。\n\n面试重点：爬楼梯本质是斐波那契模型。",
+            "difficulty": "easy",
+            "tags": [
+                "动态规划",
+                "爬楼梯",
+                "斐波那契"
+            ]
+        },
+        {
+            "id": "algorithm-043",
+            "question": "0-1 背包问题是什么？状态转移方程怎么写？",
+            "answer": "0-1 背包问题：有 n 个物品，每个物品只能选一次。每个物品有重量 weight[i] 和价值 value[i]，背包容量为 W，求最大价值。\n\n二维 dp 定义：\n`dp[i][j]` 表示只考虑前 i 个物品，容量为 j 时的最大价值。\n\n状态转移：\n1. 不选第 i 个物品：`dp[i - 1][j]`。\n2. 选第 i 个物品：`dp[i - 1][j - weight[i]] + value[i]`。\n\n所以：\n```text\ndp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i])\n```\n\n一维优化：\n```java\nfor (int i = 0; i < n; i++) {\n    for (int j = W; j >= weight[i]; j--) {\n        dp[j] = Math.max(dp[j], dp[j - weight[i]] + value[i]);\n    }\n}\n```\n\n面试重点：0-1 背包一维优化时容量要倒序遍历，防止同一物品被重复选择。",
+            "difficulty": "hard",
+            "tags": [
+                "动态规划",
+                "0-1背包",
+                "状态转移"
+            ]
+        },
+        {
+            "id": "algorithm-044",
+            "question": "完全背包和 0-1 背包有什么区别？",
+            "answer": "区别在于每个物品能否重复选择。\n\n0-1 背包：\n1. 每个物品最多选一次。\n2. 一维 dp 中容量要倒序遍历。\n3. 防止同一个物品被重复使用。\n\n完全背包：\n1. 每个物品可以选无限次。\n2. 一维 dp 中容量要正序遍历。\n3. 允许当前物品被重复使用。\n\n完全背包模板：\n```java\nfor (int i = 0; i < n; i++) {\n    for (int j = weight[i]; j <= W; j++) {\n        dp[j] = Math.max(dp[j], dp[j - weight[i]] + value[i]);\n    }\n}\n```\n\n面试重点：0-1 背包倒序，完全背包正序。",
+            "difficulty": "hard",
+            "tags": [
+                "动态规划",
+                "完全背包",
+                "0-1背包"
+            ]
+        },
+        {
+            "id": "algorithm-045",
+            "question": "最长递增子序列 LIS 如何求？",
+            "answer": "最长递增子序列是经典 DP 和二分题。\n\n方法一：动态规划。\n`dp[i]` 表示以 nums[i] 结尾的最长递增子序列长度。\n\n转移：\n```text\n如果 nums[j] < nums[i]，dp[i] = max(dp[i], dp[j] + 1)\n```\n时间复杂度 O(n²)。\n\n方法二：贪心 + 二分。\n维护数组 tails，tails[len] 表示长度为 len + 1 的递增子序列的最小结尾值。\n遍历 nums，用二分找到第一个大于等于当前值的位置替换。\n\n复杂度：O(n log n)。\n\n注意：\ntails 不一定是真实的 LIS，但它的长度就是 LIS 长度。\n\n面试重点：O(n²) DP 要会，O(n log n) 贪心二分是进阶高频。",
+            "difficulty": "hard",
+            "tags": [
+                "动态规划",
+                "LIS",
+                "二分",
+                "贪心"
+            ]
+        },
+        {
+            "id": "algorithm-046",
+            "question": "最长公共子序列 LCS 如何求？",
+            "answer": "LCS 是二维动态规划经典题。\n\n状态定义：\n`dp[i][j]` 表示 text1 前 i 个字符和 text2 前 j 个字符的最长公共子序列长度。\n\n状态转移：\n1. 如果 `text1[i - 1] == text2[j - 1]`：\n```text\ndp[i][j] = dp[i - 1][j - 1] + 1\n```\n2. 否则：\n```text\ndp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n```\n\n初始化：\n`dp[0][j] = 0`，`dp[i][0] = 0`。\n\n复杂度：\n1. 时间 O(mn)。\n2. 空间 O(mn)，可优化。\n\n面试重点：子序列不要求连续，子串才要求连续。",
+            "difficulty": "hard",
+            "tags": [
+                "动态规划",
+                "LCS",
+                "字符串"
+            ]
+        },
+        {
+            "id": "algorithm-047",
+            "question": "编辑距离问题如何做？",
+            "answer": "编辑距离是二维动态规划经典题。\n\n允许操作：插入、删除、替换。\n\n状态定义：\n`dp[i][j]` 表示 word1 前 i 个字符转换成 word2 前 j 个字符的最少操作数。\n\n状态转移：\n1. 如果 `word1[i - 1] == word2[j - 1]`：\n```text\ndp[i][j] = dp[i - 1][j - 1]\n```\n2. 否则取三种操作最小值：\n```text\ndp[i][j] = min(\n  dp[i - 1][j] + 1,      // 删除\n  dp[i][j - 1] + 1,      // 插入\n  dp[i - 1][j - 1] + 1   // 替换\n)\n```\n\n初始化：\n1. `dp[i][0] = i`。\n2. `dp[0][j] = j`。\n\n面试重点：编辑距离的核心是从最后一个字符是否相等来拆分问题。",
+            "difficulty": "hard",
+            "tags": [
+                "动态规划",
+                "编辑距离",
+                "字符串"
+            ]
+        },
+        {
+            "id": "algorithm-048",
+            "question": "贪心算法适合解决什么问题？和动态规划有什么区别？",
+            "answer": "贪心算法每一步都选择当前看起来最优的方案，希望最终得到全局最优。\n\n适合条件：\n1. 贪心选择性质：局部最优选择能导向全局最优。\n2. 最优子结构：问题的最优解包含子问题的最优解。\n\n常见题型：\n1. 分发饼干。\n2. 跳跃游戏。\n3. 区间调度。\n4. 买卖股票简单版。\n5. 合并区间部分问题。\n\n和动态规划区别：\n1. DP 会保存多个状态，比较不同选择。\n2. 贪心只保留当前最优选择，不回头。\n3. 贪心效率通常更高，但正确性更难证明。\n\n面试重点：贪心不能靠感觉，要能说明为什么局部最优可以推出全局最优。",
+            "difficulty": "medium",
+            "tags": [
+                "贪心",
+                "动态规划",
+                "最优子结构"
+            ]
+        },
+        {
+            "id": "algorithm-049",
+            "question": "并查集是什么？适合解决什么问题？",
+            "answer": "并查集是一种用于处理不相交集合合并与查询的数据结构。\n\n支持操作：\n1. find：查找元素所属集合代表。\n2. union：合并两个集合。\n3. connected：判断两个元素是否属于同一集合。\n\n优化：\n1. 路径压缩：find 时把路径上的节点直接连到根节点。\n2. 按秩合并或按大小合并：把小树挂到大树下面。\n\n复杂度：\n经过优化后，单次操作接近 O(1)。\n\n适合场景：\n1. 判断图中连通分量。\n2. 判断是否有环。\n3. 岛屿数量变体。\n4. Kruskal 最小生成树。\n5. 朋友圈、省份数量。\n\n面试重点：并查集适合动态合并集合和快速判断连通性。",
+            "difficulty": "medium",
+            "tags": [
+                "并查集",
+                "连通性",
+                "路径压缩"
+            ]
+        },
+        {
+            "id": "algorithm-050",
+            "question": "如何设计 LRU 缓存？",
+            "answer": "LRU 缓存需要支持 O(1) 的 get 和 put，并在容量满时淘汰最近最少使用的元素。\n\n核心数据结构：\n1. HashMap：key -> 双向链表节点，用于 O(1) 查找。\n2. 双向链表：维护使用顺序。\n   - 头部表示最近使用。\n   - 尾部表示最久未使用。\n\n操作：\n1. get(key)：\n   - 如果不存在，返回 -1。\n   - 如果存在，把节点移动到链表头部，返回 value。\n\n2. put(key, value)：\n   - 如果 key 已存在，更新 value，并移动到头部。\n   - 如果 key 不存在，新建节点放到头部。\n   - 如果超过容量，删除尾部节点，并从 map 中移除。\n\n为什么要双向链表：\n删除任意节点时，需要 O(1) 找到前驱和后继。\n\n面试重点：LRU = HashMap + 双向链表。",
+            "difficulty": "hard",
+            "tags": [
+                "LRU",
+                "哈希表",
+                "双向链表",
+                "缓存"
+            ]
+        }
+    ]
+}

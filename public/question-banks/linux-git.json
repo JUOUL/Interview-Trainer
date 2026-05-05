@@ -1,0 +1,590 @@
+{
+    "id": "linux-git",
+    "name": "Linux 与 Git",
+    "description": "面向后端、客户端、C++/Java 开发面试的 Linux 与 Git 高频题库，覆盖 Linux 常用命令、文件权限、进程管理、日志排查、磁盘与网络排查、Shell 基础，以及 Git 工作区、暂存区、分支、合并、回滚、冲突处理和协作流程。",
+    "questions": [
+        {
+            "id": "linux-git-001",
+            "question": "Linux 中常用的查看文件内容命令有哪些？",
+            "answer": "常见命令：\n\n1. `cat`：一次性输出整个文件，适合小文件。\n2. `less`：分页查看文件，适合大文件。\n3. `more`：分页查看，功能比 less 少。\n4. `head`：查看文件开头几行。\n5. `tail`：查看文件结尾几行。\n6. `tail -f`：实时追踪日志新增内容。\n7. `grep`：按关键字过滤文件内容。\n\n常用例子：\n```bash\ntail -f app.log\ntail -n 200 app.log\ngrep \"ERROR\" app.log\ngrep -n \"Exception\" app.log\nless app.log\n```\n\n面试重点：线上看日志最常用的是 `tail -f`、`grep`、`less`。",
+            "difficulty": "easy",
+            "tags": [
+                "Linux命令",
+                "日志查看",
+                "cat",
+                "less",
+                "tail",
+                "grep"
+            ]
+        },
+        {
+            "id": "linux-git-002",
+            "question": "grep 常用参数有哪些？",
+            "answer": "`grep` 用于按文本模式搜索内容。\n\n常用参数：\n1. `-n`：显示匹配行号。\n2. `-i`：忽略大小写。\n3. `-v`：反向匹配，显示不包含关键字的行。\n4. `-r`：递归搜索目录。\n5. `-E`：使用扩展正则表达式。\n6. `-A n`：显示匹配行后 n 行。\n7. `-B n`：显示匹配行前 n 行。\n8. `-C n`：显示匹配行前后 n 行。\n\n常用例子：\n```bash\ngrep -n \"ERROR\" app.log\ngrep -rn \"timeout\" /var/log/app\ngrep -C 5 \"NullPointerException\" app.log\ngrep -v \"DEBUG\" app.log\n```\n\n面试重点：排查异常时，`grep -C` 很常用，可以看到异常上下文。",
+            "difficulty": "easy",
+            "tags": [
+                "grep",
+                "日志排查",
+                "Linux命令"
+            ]
+        },
+        {
+            "id": "linux-git-003",
+            "question": "find 命令如何使用？和 grep 有什么区别？",
+            "answer": "`find` 用于查找文件或目录，`grep` 用于查找文件内容。\n\nfind 常用例子：\n```bash\nfind /var/log -name \"*.log\"\nfind . -type f -name \"*.java\"\nfind . -type f -mtime -1\nfind . -type f -size +100M\n```\n\n含义：\n1. `-name`：按文件名查找。\n2. `-type f`：查找普通文件。\n3. `-type d`：查找目录。\n4. `-mtime -1`：最近 1 天内修改过。\n5. `-size +100M`：大于 100MB 的文件。\n\n区别：\n1. find 找文件。\n2. grep 找内容。\n3. 两者可以组合使用。\n\n组合例子：\n```bash\nfind . -name \"*.log\" | xargs grep \"ERROR\"\n```\n\n面试重点：find 解决“文件在哪”，grep 解决“内容在哪”。",
+            "difficulty": "easy",
+            "tags": [
+                "find",
+                "grep",
+                "文件查找",
+                "Linux命令"
+            ]
+        },
+        {
+            "id": "linux-git-004",
+            "question": "awk 命令适合做什么？",
+            "answer": "`awk` 适合按列处理文本，常用于日志分析和简单统计。\n\n默认按空格或制表符分列。\n\n例子：\n```bash\nawk '{print $1}' access.log\nawk '{print $1, $7}' access.log\nawk '$9 == 500 {print $0}' access.log\nawk '{count[$1]++} END {for (ip in count) print ip, count[ip]}' access.log\n```\n\n常见变量：\n1. `$0`：整行。\n2. `$1`：第一列。\n3. `$2`：第二列。\n4. `NR`：当前行号。\n5. `NF`：当前行字段数。\n\n适合场景：\n1. 统计访问 IP 次数。\n2. 筛选某列满足条件的日志。\n3. 提取日志中的状态码、接口、耗时。\n\n面试重点：grep 更偏按行匹配，awk 更偏按列处理和统计。",
+            "difficulty": "medium",
+            "tags": [
+                "awk",
+                "日志分析",
+                "文本处理"
+            ]
+        },
+        {
+            "id": "linux-git-005",
+            "question": "sed 命令适合做什么？",
+            "answer": "`sed` 是流式文本编辑工具，常用于替换、删除、插入文本。\n\n常用例子：\n```bash\nsed 's/old/new/g' file.txt\nsed -n '10,20p' file.txt\nsed '/DEBUG/d' app.log\nsed -i 's/dev/prod/g' config.txt\n```\n\n含义：\n1. `s/old/new/g`：把 old 替换成 new。\n2. `-n '10,20p'`：只打印第 10 到 20 行。\n3. `'/DEBUG/d'`：删除包含 DEBUG 的行。\n4. `-i`：直接修改文件。\n\n注意：\n`sed -i` 会直接改原文件，线上操作要谨慎，最好先备份。\n\n面试重点：sed 常用于批量替换文本，awk 常用于按列统计。",
+            "difficulty": "medium",
+            "tags": [
+                "sed",
+                "文本替换",
+                "Linux命令"
+            ]
+        },
+        {
+            "id": "linux-git-006",
+            "question": "Linux 文件权限 rwx 分别是什么意思？",
+            "answer": "Linux 文件权限由读、写、执行三类权限组成。\n\n1. `r`，read，读权限。\n对文件表示可以读取内容；对目录表示可以查看目录下文件名。\n\n2. `w`，write，写权限。\n对文件表示可以修改内容；对目录表示可以在目录中创建、删除、重命名文件。\n\n3. `x`，execute，执行权限。\n对文件表示可以执行；对目录表示可以进入该目录。\n\n权限通常分三组：\n```bash\n-rwxr-xr--\n```\n含义：\n1. 第一组 `rwx`：文件所有者权限。\n2. 第二组 `r-x`：所属用户组权限。\n3. 第三组 `r--`：其他用户权限。\n\n面试重点：目录的 x 权限表示能否进入目录，目录的 w 权限影响能否创建和删除文件。",
+            "difficulty": "easy",
+            "tags": [
+                "Linux权限",
+                "rwx",
+                "chmod"
+            ]
+        },
+        {
+            "id": "linux-git-007",
+            "question": "chmod 755、644 分别是什么意思？",
+            "answer": "chmod 使用数字表示权限。\n\n数字含义：\n1. r = 4。\n2. w = 2。\n3. x = 1。\n\n所以：\n1. 7 = 4 + 2 + 1 = rwx。\n2. 6 = 4 + 2 = rw-。\n3. 5 = 4 + 1 = r-x。\n4. 4 = r--。\n\n`chmod 755 file` 表示：\n1. 所有者：rwx。\n2. 用户组：r-x。\n3. 其他用户：r-x。\n\n常用于可执行脚本或目录。\n\n`chmod 644 file` 表示：\n1. 所有者：rw-。\n2. 用户组：r--。\n3. 其他用户：r--。\n\n常用于普通文件。\n\n面试重点：755 常用于目录或脚本，644 常用于普通文本文件。",
+            "difficulty": "easy",
+            "tags": [
+                "chmod",
+                "文件权限",
+                "755",
+                "644"
+            ]
+        },
+        {
+            "id": "linux-git-008",
+            "question": "chown 和 chmod 有什么区别？",
+            "answer": "`chmod` 用于修改权限，`chown` 用于修改文件所有者和所属组。\n\nchmod：\n```bash\nchmod 755 run.sh\nchmod u+x run.sh\n```\n作用是改变文件的读、写、执行权限。\n\nchown：\n```bash\nchown user file.txt\nchown user:group file.txt\nchown -R user:group /data/app\n```\n作用是改变文件所属用户和用户组。\n\n区别：\n1. chmod 改“能不能读写执行”。\n2. chown 改“这个文件属于谁”。\n\n面试重点：权限问题排查时，要同时看文件权限和文件所有者。",
+            "difficulty": "easy",
+            "tags": [
+                "chmod",
+                "chown",
+                "Linux权限"
+            ]
+        },
+        {
+            "id": "linux-git-009",
+            "question": "软链接和硬链接有什么区别？",
+            "answer": "软链接和硬链接都可以让一个文件通过多个路径访问，但底层不同。\n\n硬链接：\n1. 多个文件名指向同一个 inode。\n2. 删除其中一个文件名，不影响实际数据。\n3. 只有所有硬链接都删除，数据才可能被释放。\n4. 通常不能跨文件系统。\n5. 通常不能对目录创建硬链接。\n\n软链接：\n1. 也叫符号链接，是一个独立文件。\n2. 保存的是目标路径。\n3. 可以跨文件系统。\n4. 可以链接目录。\n5. 如果目标文件被删除，软链接会失效。\n\n创建命令：\n```bash\nln source hard_link\nln -s source soft_link\n```\n\n面试重点：硬链接共享 inode，软链接保存路径。",
+            "difficulty": "medium",
+            "tags": [
+                "软链接",
+                "硬链接",
+                "inode",
+                "ln"
+            ]
+        },
+        {
+            "id": "linux-git-010",
+            "question": "Linux 中 inode 是什么？",
+            "answer": "inode 是 Linux 文件系统中用于保存文件元数据的数据结构。\n\ninode 通常保存：\n1. 文件类型。\n2. 文件权限。\n3. 文件所有者。\n4. 文件大小。\n5. 时间戳。\n6. 链接数。\n7. 数据块位置。\n\n注意：\n1. inode 不保存文件名。\n2. 文件名保存在目录项中。\n3. 目录项把文件名映射到 inode 编号。\n4. 硬链接就是多个目录项指向同一个 inode。\n\n常见问题：\n磁盘空间还没满，但 inode 用完，也无法创建新文件。可以用下面命令查看：\n```bash\ndf -i\n```\n\n面试重点：inode 存元数据和数据块位置，不存文件名。",
+            "difficulty": "medium",
+            "tags": [
+                "inode",
+                "文件系统",
+                "df"
+            ]
+        },
+        {
+            "id": "linux-git-011",
+            "question": "ps、top、pidstat 分别用于什么场景？",
+            "answer": "这几个命令都和进程监控有关，但侧重点不同。\n\n1. `ps`：查看某一时刻的进程快照。\n常用：\n```bash\nps -ef | grep java\nps aux | grep nginx\n```\n\n2. `top`：实时查看系统整体资源和进程资源占用。\n可以看 CPU、内存、load average、进程列表。\n\n3. `pidstat`：按进程或线程查看 CPU、内存、IO 等指标。\n常用：\n```bash\npidstat -u 1\npidstat -r 1\npidstat -d 1\npidstat -p <pid> 1\n```\n\n面试重点：ps 看快照，top 看实时整体，pidstat 看进程级细分指标。",
+            "difficulty": "easy",
+            "tags": [
+                "ps",
+                "top",
+                "pidstat",
+                "进程监控"
+            ]
+        },
+        {
+            "id": "linux-git-012",
+            "question": "Linux 中如何查看某个端口被哪个进程占用？",
+            "answer": "常用命令有 `lsof`、`netstat`、`ss`。\n\n方式一：lsof\n```bash\nlsof -i :8080\n```\n\n方式二：netstat\n```bash\nnetstat -tunlp | grep 8080\n```\n\n方式三：ss\n```bash\nss -tunlp | grep 8080\n```\n\n参数含义：\n1. `-t`：TCP。\n2. `-u`：UDP。\n3. `-n`：不解析域名和服务名，直接显示数字。\n4. `-l`：监听状态。\n5. `-p`：显示进程信息。\n\n面试重点：现代 Linux 更推荐 `ss`，速度通常比 netstat 更快。",
+            "difficulty": "easy",
+            "tags": [
+                "端口占用",
+                "lsof",
+                "netstat",
+                "ss"
+            ]
+        },
+        {
+            "id": "linux-git-013",
+            "question": "netstat 和 ss 有什么区别？",
+            "answer": "`netstat` 和 `ss` 都可以查看网络连接状态。\n\nnetstat：\n1. 来自 net-tools 工具包。\n2. 使用广泛，很多老系统和教程常见。\n3. 在连接很多时可能较慢。\n\nss：\n1. 来自 iproute2 工具包。\n2. 读取内核 socket 信息更高效。\n3. 在大量连接场景下性能更好。\n4. 新系统中更推荐使用 ss。\n\n常用命令：\n```bash\nnetstat -tunlp\nss -tunlp\nss -ant | grep ESTAB\n```\n\n面试重点：ss 可以看作 netstat 的更现代、更高效替代。",
+            "difficulty": "medium",
+            "tags": [
+                "netstat",
+                "ss",
+                "网络连接"
+            ]
+        },
+        {
+            "id": "linux-git-014",
+            "question": "如何查看 Linux 系统负载？load average 是什么意思？",
+            "answer": "可以使用 `top`、`uptime` 查看系统负载。\n\n命令：\n```bash\nuptime\ntop\n```\n\nload average 通常显示 1 分钟、5 分钟、15 分钟的平均负载。\n\n含义：\nload average 表示处于可运行状态和不可中断睡眠状态的任务数量平均值。\n\n简单理解：\n1. 如果机器是 4 核 CPU，load 长期在 4 左右，说明负载接近满载。\n2. 如果机器是 4 核 CPU，load 长期远大于 4，说明任务排队严重。\n3. load 高不一定都是 CPU 高，也可能是大量进程处于 I/O 等待。\n\n排查时要结合：\n1. CPU 使用率。\n2. I/O wait。\n3. 进程状态。\n4. 磁盘和网络指标。\n\n面试重点：load average 不是 CPU 使用率，要结合 CPU 核数和 I/O wait 分析。",
+            "difficulty": "medium",
+            "tags": [
+                "load average",
+                "top",
+                "uptime",
+                "性能排查"
+            ]
+        },
+        {
+            "id": "linux-git-015",
+            "question": "Linux 服务器 CPU 飙高如何排查？",
+            "answer": "排查步骤：\n\n1. 用 `top` 找到 CPU 占用最高的进程。\n```bash\ntop\n```\n\n2. 如果是 Java 进程，用 `top -Hp <pid>` 找到占用最高的线程。\n```bash\ntop -Hp 12345\n```\n\n3. 把线程 ID 转成 16 进制。\n```bash\nprintf \"%x\\n\" <tid>\n```\n\n4. 用 `jstack` 查看线程栈，搜索对应 nid。\n```bash\njstack 12345 | grep -A 30 <hex_tid>\n```\n\n5. 判断是死循环、频繁 GC、锁竞争、线程池打满、正则回溯还是业务代码热点。\n\nC/C++ 程序可以用：\n```bash\nperf top\npstack <pid>\ngdb -p <pid>\n```\n\n面试重点：CPU 排查路径是先定位进程，再定位线程，再定位代码栈。",
+            "difficulty": "hard",
+            "tags": [
+                "CPU排查",
+                "top",
+                "jstack",
+                "perf",
+                "线上问题"
+            ]
+        },
+        {
+            "id": "linux-git-016",
+            "question": "Linux 内存占用高如何排查？",
+            "answer": "排查步骤：\n\n1. 查看整体内存：\n```bash\nfree -h\n```\n\n2. 查看进程内存占用：\n```bash\ntop\nps aux --sort=-%mem | head\n```\n\n3. 查看某个进程内存：\n```bash\npmap -x <pid>\ncat /proc/<pid>/status\n```\n\n4. 区分真实内存占用和 Page Cache。\nLinux 会用空闲内存做文件缓存，所以 free 里 buff/cache 高不一定是内存泄漏。\n\n5. Java 程序排查：\n```bash\njmap -heap <pid>\njmap -histo <pid>\njcmd <pid> GC.heap_info\n```\n\n6. 判断是否存在：\n- 内存泄漏。\n- 大对象。\n- 连接未释放。\n- 缓存无限增长。\n- 线程数过多。\n- Page Cache 正常占用。\n\n面试重点：Linux 内存高不一定异常，要区分应用内存、Page Cache、swap 和泄漏。",
+            "difficulty": "hard",
+            "tags": [
+                "内存排查",
+                "free",
+                "top",
+                "pmap",
+                "Page Cache"
+            ]
+        },
+        {
+            "id": "linux-git-017",
+            "question": "free 命令中 buff/cache 很高是不是内存不够？",
+            "answer": "不一定。\n\nLinux 会尽量利用空闲内存作为文件系统缓存，也就是 buff/cache，用来提升文件读写性能。\n\n`free -h` 中常见字段：\n1. total：总内存。\n2. used：已使用内存。\n3. free：完全空闲内存。\n4. buff/cache：缓冲和缓存。\n5. available：估算还能给新程序使用的内存。\n\n判断内存是否紧张时，更应该看 available，而不是只看 free。\n\n如果 buff/cache 高，但 available 也高，一般是正常的。\n\n如果 available 很低，并且 swap 使用升高、系统频繁回收内存，才说明内存可能紧张。\n\n面试重点：Linux 使用空闲内存做缓存是正常优化，不等于内存泄漏。",
+            "difficulty": "medium",
+            "tags": [
+                "free",
+                "buff/cache",
+                "Page Cache",
+                "内存"
+            ]
+        },
+        {
+            "id": "linux-git-018",
+            "question": "磁盘空间满了如何排查？",
+            "answer": "排查步骤：\n\n1. 查看磁盘分区使用情况：\n```bash\ndf -h\n```\n\n2. 查看 inode 是否耗尽：\n```bash\ndf -i\n```\n\n3. 找大目录：\n```bash\ndu -sh /*\ndu -h --max-depth=1 /var | sort -hr\n```\n\n4. 找大文件：\n```bash\nfind / -type f -size +1G 2>/dev/null\n```\n\n5. 检查日志目录：\n```bash\ndu -sh /var/log/*\n```\n\n6. 如果删除文件后空间没有释放，可能是文件仍被进程占用：\n```bash\nlsof | grep deleted\n```\n\n处理方式：\n1. 清理或归档日志。\n2. 删除无用临时文件。\n3. 配置日志轮转 logrotate。\n4. 重启占用已删除文件的进程。\n\n面试重点：磁盘满要同时看空间和 inode；删除文件后不释放，要查 deleted 文件句柄。",
+            "difficulty": "hard",
+            "tags": [
+                "磁盘排查",
+                "df",
+                "du",
+                "lsof",
+                "inode"
+            ]
+        },
+        {
+            "id": "linux-git-019",
+            "question": "文件删除后磁盘空间没有释放，可能是什么原因？",
+            "answer": "常见原因是文件虽然从目录中删除了，但仍然被某个进程打开。\n\nLinux 中：\n1. 删除文件只是删除目录项。\n2. 如果进程仍持有该文件描述符，inode 和数据块不会立刻释放。\n3. 只有所有文件描述符关闭后，空间才会释放。\n\n排查命令：\n```bash\nlsof | grep deleted\n```\n\n处理方式：\n1. 重启持有该文件的进程。\n2. 或让进程重新打开日志文件。\n3. 对日志文件不要直接 rm，更推荐日志轮转。\n\n常见场景：\n应用日志文件被删除，但 Java/Nginx 进程仍然在写旧文件句柄。\n\n面试重点：删除文件后空间不释放，优先查是否有进程占用 deleted 文件。",
+            "difficulty": "hard",
+            "tags": [
+                "磁盘空间",
+                "lsof",
+                "deleted",
+                "文件描述符"
+            ]
+        },
+        {
+            "id": "linux-git-020",
+            "question": "如何查看磁盘 I/O 是否有瓶颈？",
+            "answer": "常用命令：\n```bash\niostat -x 1\niotop\npidstat -d 1\nvmstat 1\n```\n\n重点指标：\n1. `%util`：磁盘繁忙程度，接近 100% 说明磁盘可能很忙。\n2. `await`：I/O 请求平均等待时间，过高说明 I/O 延迟大。\n3. `r/s`、`w/s`：每秒读写请求数。\n4. `rkB/s`、`wkB/s`：每秒读写吞吐。\n5. `iowait`：CPU 等待 I/O 的比例。\n\n排查思路：\n1. 用 iostat 看整体磁盘是否忙。\n2. 用 iotop 或 pidstat 找哪个进程在读写。\n3. 分析是日志写入、数据库、备份、临时文件还是大文件读写。\n\n面试重点：I/O 瓶颈要看 await、util、iowait，并定位到具体进程。",
+            "difficulty": "hard",
+            "tags": [
+                "磁盘IO",
+                "iostat",
+                "iotop",
+                "pidstat"
+            ]
+        },
+        {
+            "id": "linux-git-021",
+            "question": "如何查看网络连接和网络问题？",
+            "answer": "常用命令：\n\n1. 查看连接：\n```bash\nss -ant\nnetstat -ant\n```\n\n2. 查看监听端口：\n```bash\nss -tunlp\n```\n\n3. 测试连通性：\n```bash\nping host\n```\n\n4. 查看路由路径：\n```bash\ntraceroute host\n```\n\n5. 测试端口是否可连：\n```bash\nnc -vz host  port\ntelnet host port\n```\n\n6. 抓包分析：\n```bash\ntcpdump -i eth0 port 8080\n```\n\n7. 查看网卡流量：\n```bash\nsar -n DEV 1\niftop\n```\n\n面试重点：网络问题要区分 DNS、连通性、端口、路由、丢包、服务端处理慢。",
+            "difficulty": "medium",
+            "tags": [
+                "网络排查",
+                "ss",
+                "ping",
+                "traceroute",
+                "tcpdump"
+            ]
+        },
+        {
+            "id": "linux-git-022",
+            "question": "curl 常用来排查什么问题？",
+            "answer": "`curl` 常用于测试 HTTP 接口和定位请求耗时。\n\n常用命令：\n```bash\ncurl http://example.com\ncurl -I http://example.com\ncurl -X POST http://example.com/api -H \"Content-Type: application/json\" -d '{\"id\":1}'\n```\n\n查看详细过程：\n```bash\ncurl -v http://example.com\n```\n\n查看各阶段耗时：\n```bash\ncurl -w \"dns:%{time_namelookup} connect:%{time_connect} start:%{time_starttransfer} total:%{time_total}\\n\" -o /dev/null -s http://example.com\n```\n\n可以排查：\n1. DNS 是否慢。\n2. TCP 连接是否慢。\n3. TLS 握手是否慢。\n4. 服务端首包时间是否慢。\n5. 总耗时是否异常。\n6. 状态码和响应头是否正确。\n\n面试重点：curl 不只是发请求，还能拆解 HTTP 请求各阶段耗时。",
+            "difficulty": "medium",
+            "tags": [
+                "curl",
+                "HTTP排查",
+                "接口测试"
+            ]
+        },
+        {
+            "id": "linux-git-023",
+            "question": "tcpdump 是什么？适合什么场景？",
+            "answer": "`tcpdump` 是 Linux 下常用的抓包工具，用于分析网络数据包。\n\n常用命令：\n```bash\ntcpdump -i eth0\ntcpdump -i eth0 port 8080\ntcpdump -i eth0 host 10.0.0.1\ntcpdump -i eth0 tcp port 443 -w out.pcap\n```\n\n适合场景：\n1. 判断请求是否到达服务器。\n2. 判断服务器是否返回响应。\n3. 分析 TCP 三次握手和四次挥手。\n4. 排查重传、丢包、RST、超时。\n5. 生成 pcap 文件后用 Wireshark 分析。\n\n注意：\n线上抓包要谨慎，避免抓取敏感数据和造成性能影响。\n\n面试重点：tcpdump 可以帮助判断问题到底在客户端、网络链路还是服务端。",
+            "difficulty": "hard",
+            "tags": [
+                "tcpdump",
+                "抓包",
+                "网络排查",
+                "Wireshark"
+            ]
+        },
+        {
+            "id": "linux-git-024",
+            "question": "Linux 中如何查看和管理后台进程？",
+            "answer": "常用方式：\n\n1. 后台运行命令：\n```bash\ncommand &\n```\n\n2. 查看当前 shell 的后台任务：\n```bash\njobs\n```\n\n3. 把前台任务暂停：\n```bash\nCtrl + Z\n```\n\n4. 让任务在后台继续运行：\n```bash\nbg %1\n```\n\n5. 把后台任务切回前台：\n```bash\nfg %1\n```\n\n6. 让进程不随终端关闭而退出：\n```bash\nnohup command > app.log 2>&1 &\n```\n\n7. 生产环境更推荐使用 systemd、supervisor、容器编排系统管理服务。\n\n面试重点：临时后台运行用 nohup，正式服务要交给进程管理系统。",
+            "difficulty": "easy",
+            "tags": [
+                "后台进程",
+                "nohup",
+                "jobs",
+                "fg",
+                "bg"
+            ]
+        },
+        {
+            "id": "linux-git-025",
+            "question": "kill、kill -9、kill -15 有什么区别？",
+            "answer": "`kill` 用于向进程发送信号。\n\n常见信号：\n1. `kill -15 pid`：发送 SIGTERM，请求进程优雅退出。这是默认信号。\n2. `kill -9 pid`：发送 SIGKILL，强制杀死进程，进程无法捕获和处理。\n3. `kill -2 pid`：发送 SIGINT，类似 Ctrl+C。\n\n区别：\n1. SIGTERM 可以被进程捕获，进程可以做清理工作，例如关闭连接、刷盘、释放资源。\n2. SIGKILL 不能被捕获，进程会被操作系统强制终止。\n3. kill -9 虽然有效，但可能导致数据未刷盘、临时文件未清理、事务中断。\n\n建议：\n优先使用 `kill pid` 或 `kill -15 pid`，无效时再考虑 `kill -9 pid`。\n\n面试重点：kill -9 是强杀，不适合优雅停机。",
+            "difficulty": "medium",
+            "tags": [
+                "kill",
+                "SIGTERM",
+                "SIGKILL",
+                "优雅退出"
+            ]
+        },
+        {
+            "id": "linux-git-026",
+            "question": "systemd 和 systemctl 常用命令有哪些？",
+            "answer": "systemd 是 Linux 常见的系统和服务管理器，systemctl 是管理命令。\n\n常用命令：\n```bash\nsystemctl start nginx\nsystemctl stop nginx\nsystemctl restart nginx\nsystemctl reload nginx\nsystemctl status nginx\nsystemctl enable nginx\nsystemctl disable nginx\nsystemctl is-active nginx\nsystemctl is-enabled nginx\n```\n\n查看日志：\n```bash\njournalctl -u nginx\njournalctl -u nginx -f\njournalctl -u nginx --since \"1 hour ago\"\n```\n\n含义：\n1. start：启动服务。\n2. stop：停止服务。\n3. restart：重启服务。\n4. reload：重新加载配置。\n5. enable：开机自启。\n6. status：查看状态。\n\n面试重点：生产服务建议用 systemd 管理，方便启动、停止、开机自启和日志查看。",
+            "difficulty": "medium",
+            "tags": [
+                "systemd",
+                "systemctl",
+                "journalctl",
+                "服务管理"
+            ]
+        },
+        {
+            "id": "linux-git-027",
+            "question": "crontab 是什么？如何写定时任务？",
+            "answer": "crontab 用于配置 Linux 定时任务。\n\n编辑定时任务：\n```bash\ncrontab -e\n```\n\n查看定时任务：\n```bash\ncrontab -l\n```\n\n格式：\n```text\n分 时 日 月 周 命令\n```\n\n例子：\n```bash\n# 每天凌晨 2 点执行\n0 2 * * * /data/scripts/backup.sh\n\n# 每 5 分钟执行一次\n*/5 * * * * /data/scripts/check.sh\n```\n\n注意：\n1. crontab 的环境变量通常很少，脚本中最好写绝对路径。\n2. 输出最好重定向到日志。\n3. 复杂任务要防止重复执行，可以加锁。\n\n面试重点：crontab 适合简单定时任务，复杂分布式任务更适合调度平台。",
+            "difficulty": "easy",
+            "tags": [
+                "crontab",
+                "定时任务",
+                "Linux命令"
+            ]
+        },
+        {
+            "id": "linux-git-028",
+            "question": "Shell 脚本中 $0、$1、$?、$$ 分别是什么意思？",
+            "answer": "Shell 中常见特殊变量：\n\n1. `$0`：当前脚本名。\n2. `$1`、`$2`：第一个、第二个参数。\n3. `$#`：参数个数。\n4. `$@`：所有参数，每个参数独立保留。\n5. `$*`：所有参数，通常作为一个整体。\n6. `$?`：上一条命令的退出状态码。\n7. `$$`：当前 shell 进程 PID。\n8. `$!`：上一个后台进程 PID。\n\n例子：\n```bash\n#!/bin/bash\necho \"script: $0\"\necho \"first arg: $1\"\necho \"arg count: $#\"\necho \"last status: $?\"\n```\n\n面试重点：`$?` 很常用于判断上一条命令是否执行成功，0 通常表示成功。",
+            "difficulty": "medium",
+            "tags": [
+                "Shell",
+                "特殊变量",
+                "脚本"
+            ]
+        },
+        {
+            "id": "linux-git-029",
+            "question": "Linux 中管道和重定向怎么用？",
+            "answer": "管道和重定向是 Shell 中非常常用的能力。\n\n管道 `|`：\n把前一个命令的输出作为后一个命令的输入。\n```bash\nps -ef | grep java\ncat app.log | grep ERROR\n```\n\n输出重定向：\n```bash\ncommand > file\n```\n覆盖写入文件。\n\n追加重定向：\n```bash\ncommand >> file\n```\n追加到文件末尾。\n\n错误输出重定向：\n```bash\ncommand 2> error.log\n```\n\n标准输出和错误都重定向：\n```bash\ncommand > app.log 2>&1\n```\n\n丢弃输出：\n```bash\ncommand > /dev/null 2>&1\n```\n\n面试重点：管道连接命令，重定向控制输入输出。",
+            "difficulty": "easy",
+            "tags": [
+                "管道",
+                "重定向",
+                "Shell"
+            ]
+        },
+        {
+            "id": "linux-git-030",
+            "question": "Git 的工作区、暂存区、本地仓库分别是什么？",
+            "answer": "Git 中常见三个区域：\n\n1. 工作区 Working Directory：\n就是你实际编辑文件的目录。\n\n2. 暂存区 Stage / Index：\n通过 `git add` 把修改放入暂存区，表示这些修改准备提交。\n\n3. 本地仓库 Repository：\n通过 `git commit` 把暂存区内容提交到本地仓库，形成一次提交记录。\n\n基本流程：\n```bash\ngit status\ngit add file.txt\ngit commit -m \"update file\"\n```\n\n远程仓库：\n通过 `git push` 把本地提交推送到远程仓库。\n\n面试重点：add 是从工作区到暂存区，commit 是从暂存区到本地仓库，push 是从本地仓库到远程仓库。",
+            "difficulty": "easy",
+            "tags": [
+                "Git",
+                "工作区",
+                "暂存区",
+                "本地仓库"
+            ]
+        },
+        {
+            "id": "linux-git-031",
+            "question": "git add、git commit、git push 分别做什么？",
+            "answer": "三个命令对应 Git 提交流程的不同阶段。\n\n1. `git add`：\n把工作区的修改加入暂存区。\n```bash\ngit add file.txt\ngit add .\n```\n\n2. `git commit`：\n把暂存区内容提交到本地仓库，生成一个 commit。\n```bash\ngit commit -m \"fix bug\"\n```\n\n3. `git push`：\n把本地仓库中的提交推送到远程仓库。\n```bash\ngit push origin main\n```\n\n简单理解：\n1. add：我要把这些改动准备提交。\n2. commit：我在本地保存一个版本。\n3. push：我把本地版本同步到远程。\n\n面试重点：commit 后只是本地有记录，push 后远程才有。",
+            "difficulty": "easy",
+            "tags": [
+                "git add",
+                "git commit",
+                "git push",
+                "Git基础"
+            ]
+        },
+        {
+            "id": "linux-git-032",
+            "question": "git fetch 和 git pull 有什么区别？",
+            "answer": "`git fetch` 和 `git pull` 都会从远程获取更新，但行为不同。\n\n`git fetch`：\n1. 只把远程分支的新提交下载到本地。\n2. 不会自动合并到当前分支。\n3. 更安全，可以先查看差异。\n\n`git pull`：\n1. 相当于 `git fetch` + `git merge`。\n2. 会把远程更新拉下来并合并到当前分支。\n3. 如果有冲突，需要解决冲突。\n\n常用流程：\n```bash\ngit fetch origin\ngit log HEAD..origin/main\ngit merge origin/main\n```\n\n或者直接：\n```bash\ngit pull origin main\n```\n\n面试重点：fetch 只下载不合并，pull 下载后自动合并。",
+            "difficulty": "easy",
+            "tags": [
+                "git fetch",
+                "git pull",
+                "远程分支"
+            ]
+        },
+        {
+            "id": "linux-git-033",
+            "question": "git merge 和 git rebase 有什么区别？",
+            "answer": "`merge` 和 `rebase` 都可以整合分支，但提交历史不同。\n\nmerge：\n1. 把两个分支合并，可能产生一个 merge commit。\n2. 保留真实分支历史。\n3. 历史可能出现分叉和合并节点。\n\nrebase：\n1. 把当前分支的提交移动到目标分支最新提交之后。\n2. 提交历史更线性。\n3. 会改写提交历史。\n\n例子：\n```bash\ngit merge main\ngit rebase main\n```\n\n使用建议：\n1. 自己本地未共享的分支，可以 rebase 整理历史。\n2. 已经推送并被多人基于开发的公共分支，不要随便 rebase。\n3. 团队协作主分支合并通常用 merge 或 PR squash。\n\n面试重点：merge 保留历史，rebase 改写历史让提交更线性。",
+            "difficulty": "medium",
+            "tags": [
+                "git merge",
+                "git rebase",
+                "分支合并"
+            ]
+        },
+        {
+            "id": "linux-git-034",
+            "question": "Git 发生冲突时如何解决？",
+            "answer": "Git 冲突通常发生在两个分支修改了同一文件的同一部分。\n\n解决步骤：\n1. 查看冲突文件：\n```bash\ngit status\n```\n\n2. 打开文件，会看到冲突标记：\n```text\n<<<<<<< HEAD\n当前分支内容\n=======\n合并分支内容\n>>>>>>> branch\n```\n\n3. 手动编辑，保留正确内容，删除冲突标记。\n\n4. 标记冲突已解决：\n```bash\ngit add conflicted-file.txt\n```\n\n5. 继续合并或变基：\n```bash\ngit commit\n```\n如果是 rebase：\n```bash\ngit rebase --continue\n```\n\n放弃操作：\n```bash\ngit merge --abort\ngit rebase --abort\n```\n\n面试重点：解决冲突的本质是人工决定最终文件内容，然后 git add 标记已解决。",
+            "difficulty": "medium",
+            "tags": [
+                "Git冲突",
+                "merge",
+                "rebase",
+                "协作"
+            ]
+        },
+        {
+            "id": "linux-git-035",
+            "question": "git reset、git revert、git checkout 有什么区别？",
+            "answer": "三者都可能和回退有关，但语义不同。\n\n`git reset`：\n1. 移动当前分支 HEAD 指针。\n2. 可以改变暂存区和工作区。\n3. 会改写历史。\n4. 常用于本地回退。\n\n`git revert`：\n1. 不改写历史。\n2. 生成一个新的 commit，用来抵消某次提交。\n3. 适合已经推送到远程的公共分支。\n\n`git checkout`：\n1. 可以切换分支。\n2. 也可以恢复文件到某个版本。\n3. 新版本 Git 更推荐用 `git switch` 切分支，用 `git restore` 恢复文件。\n\n面试重点：reset 改历史，revert 新增反向提交，checkout 常用于切分支或恢复文件。",
+            "difficulty": "medium",
+            "tags": [
+                "git reset",
+                "git revert",
+                "git checkout",
+                "版本回退"
+            ]
+        },
+        {
+            "id": "linux-git-036",
+            "question": "git reset --soft、--mixed、--hard 有什么区别？",
+            "answer": "`git reset` 有三种常见模式，区别在于影响哪些区域。\n\n1. `--soft`：\n只移动 HEAD，不改变暂存区和工作区。\n提交会被撤回到暂存区。\n\n2. `--mixed`：\n默认模式。移动 HEAD，并重置暂存区，但不改变工作区。\n提交会变成工作区未暂存修改。\n\n3. `--hard`：\n移动 HEAD，重置暂存区和工作区。\n本地修改会被丢弃，危险操作。\n\n例子：\n```bash\ngit reset --soft HEAD~1\ngit reset --mixed HEAD~1\ngit reset --hard HEAD~1\n```\n\n面试重点：soft 保留到暂存区，mixed 保留到工作区，hard 全部丢弃。",
+            "difficulty": "medium",
+            "tags": [
+                "git reset",
+                "soft",
+                "mixed",
+                "hard"
+            ]
+        },
+        {
+            "id": "linux-git-037",
+            "question": "已经 push 到远程的提交想撤销，应该用 reset 还是 revert？",
+            "answer": "已经 push 到远程、并且可能被别人基于开发的提交，通常应该使用 `git revert`。\n\n原因：\n1. revert 不改写历史。\n2. 它会生成一个新的提交，用来抵消之前的提交。\n3. 对团队协作更安全。\n\n命令：\n```bash\ngit revert <commit_id>\ngit push\n```\n\n不推荐直接 reset 后强推：\n```bash\ngit reset --hard <old_commit>\ngit push --force\n```\n因为这会改写远程历史，可能影响其他人的本地分支。\n\n什么时候可以 reset：\n1. 本地还没 push。\n2. 明确只有自己使用的远程分支。\n3. 团队约定允许 force push。\n\n面试重点：公共分支回滚用 revert，本地私有提交可以 reset。",
+            "difficulty": "medium",
+            "tags": [
+                "git revert",
+                "git reset",
+                "远程回滚",
+                "团队协作"
+            ]
+        },
+        {
+            "id": "linux-git-038",
+            "question": "git stash 是什么？适合什么场景？",
+            "answer": "`git stash` 用于临时保存当前工作区和暂存区的修改，让工作区变干净。\n\n适合场景：\n1. 当前开发到一半，需要临时切换分支修 bug。\n2. pull 或 rebase 前，需要暂存未完成修改。\n3. 不想提交半成品代码，但又要切换上下文。\n\n常用命令：\n```bash\ngit stash\ngit stash list\ngit stash pop\ngit stash apply\ngit stash drop\ngit stash clear\n```\n\n区别：\n1. `stash pop`：恢复最近一次 stash，并删除该 stash。\n2. `stash apply`：恢复 stash，但不删除记录。\n\n面试重点：stash 是临时保存现场，不应该长期当正式版本管理使用。",
+            "difficulty": "easy",
+            "tags": [
+                "git stash",
+                "临时保存",
+                "切换分支"
+            ]
+        },
+        {
+            "id": "linux-git-039",
+            "question": "git cherry-pick 是什么？适合什么场景？",
+            "answer": "`git cherry-pick` 用于把某个提交应用到当前分支。\n\n适合场景：\n1. 只想把某个 bugfix 提交同步到另一个分支。\n2. 不想合并整个分支，只需要其中一个或几个提交。\n3. hotfix 从开发分支挑选到发布分支。\n\n命令：\n```bash\ngit cherry-pick <commit_id>\n```\n\n如果有多个提交：\n```bash\ngit cherry-pick commit1 commit2\n```\n\n注意：\n1. cherry-pick 会生成新的 commit，commit hash 会变化。\n2. 可能产生冲突，需要手动解决。\n3. 不要滥用，否则历史可能变得难追踪。\n\n面试重点：cherry-pick 是“摘取某个提交”到当前分支。",
+            "difficulty": "medium",
+            "tags": [
+                "git cherry-pick",
+                "提交挑选",
+                "hotfix"
+            ]
+        },
+        {
+            "id": "linux-git-040",
+            "question": "git rebase -i 可以做什么？",
+            "answer": "`git rebase -i` 是交互式变基，用于整理提交历史。\n\n常见用途：\n1. 合并多个 commit。\n2. 修改 commit message。\n3. 删除某个 commit。\n4. 调整 commit 顺序。\n5. 拆分 commit。\n\n命令：\n```bash\ngit rebase -i HEAD~3\n```\n\n常见操作：\n1. `pick`：保留提交。\n2. `reword`：修改提交信息。\n3. `edit`：停下来修改提交。\n4. `squash`：合并到前一个提交，并编辑信息。\n5. `fixup`：合并到前一个提交，丢弃当前提交信息。\n6. `drop`：删除提交。\n\n注意：\n不要对公共分支随意做交互式 rebase，因为它会改写历史。\n\n面试重点：rebase -i 用来整理本地提交历史，常用于提交 PR 前清理 commit。",
+            "difficulty": "hard",
+            "tags": [
+                "git rebase",
+                "交互式变基",
+                "提交历史"
+            ]
+        },
+        {
+            "id": "linux-git-041",
+            "question": "git branch、git checkout、git switch 分别怎么用？",
+            "answer": "常见分支命令：\n\n查看分支：\n```bash\ngit branch\n```\n\n创建分支：\n```bash\ngit branch feature/login\n```\n\n切换分支，老命令：\n```bash\ngit checkout feature/login\n```\n\n创建并切换分支：\n```bash\ngit checkout -b feature/login\n```\n\n新版本推荐用 switch：\n```bash\ngit switch feature/login\ngit switch -c feature/login\n```\n\n区别：\n1. checkout 功能很多，既能切分支，也能恢复文件。\n2. switch 专门用于切换分支，语义更清晰。\n3. restore 专门用于恢复文件。\n\n面试重点：checkout 是老牌多功能命令，switch/restore 是新版本中更清晰的拆分。",
+            "difficulty": "easy",
+            "tags": [
+                "git branch",
+                "git checkout",
+                "git switch",
+                "分支"
+            ]
+        },
+        {
+            "id": "linux-git-042",
+            "question": "Git 中如何删除本地分支和远程分支？",
+            "answer": "删除本地分支：\n```bash\ngit branch -d feature/login\n```\n\n如果分支未合并，强制删除：\n```bash\ngit branch -D feature/login\n```\n\n删除远程分支：\n```bash\ngit push origin --delete feature/login\n```\n\n或者老写法：\n```bash\ngit push origin :feature/login\n```\n\n清理本地已经不存在的远程跟踪分支：\n```bash\ngit remote prune origin\n```\n\n注意：\n删除分支前最好确认代码已经合并或不再需要。\n\n面试重点：本地删除用 branch -d/-D，远程删除用 push origin --delete。",
+            "difficulty": "easy",
+            "tags": [
+                "Git分支",
+                "删除分支",
+                "远程分支"
+            ]
+        },
+        {
+            "id": "linux-git-043",
+            "question": "git log 常用查看方式有哪些？",
+            "answer": "`git log` 用于查看提交历史。\n\n常用命令：\n```bash\ngit log\ngit log --oneline\ngit log --graph --oneline --all\ngit log --author=\"name\"\ngit log --since=\"1 week ago\"\ngit log -- file.txt\ngit log -p file.txt\n```\n\n含义：\n1. `--oneline`：一行显示一个提交。\n2. `--graph`：显示分支图。\n3. `--all`：显示所有分支。\n4. `--author`：按作者过滤。\n5. `--since`：按时间过滤。\n6. `-- file.txt`：查看某个文件历史。\n7. `-p`：显示每次提交的具体 diff。\n\n面试重点：排查代码什么时候改坏时，`git log -p file` 很有用。",
+            "difficulty": "easy",
+            "tags": [
+                "git log",
+                "提交历史",
+                "代码追踪"
+            ]
+        },
+        {
+            "id": "linux-git-044",
+            "question": "git diff 常见用法有哪些？",
+            "answer": "`git diff` 用于查看差异。\n\n常用命令：\n```bash\ngit diff\ngit diff --staged\ngit diff HEAD\ngit diff branch1 branch2\ngit diff commit1 commit2\ngit diff -- file.txt\n```\n\n含义：\n1. `git diff`：查看工作区和暂存区之间的差异。\n2. `git diff --staged`：查看暂存区和上一次提交之间的差异。\n3. `git diff HEAD`：查看工作区加暂存区和 HEAD 的差异。\n4. `git diff branch1 branch2`：查看两个分支差异。\n5. `git diff commit1 commit2`：查看两个提交差异。\n\n面试重点：提交前用 git diff 和 git diff --staged 检查代码，是很好的习惯。",
+            "difficulty": "easy",
+            "tags": [
+                "git diff",
+                "代码差异",
+                "暂存区"
+            ]
+        },
+        {
+            "id": "linux-git-045",
+            "question": "git tag 是什么？常用来做什么？",
+            "answer": "`git tag` 用于给某个提交打标签，常用于标记版本发布点。\n\n常用命令：\n```bash\ngit tag\ngit tag v1.0.0\ngit tag -a v1.0.0 -m \"release v1.0.0\"\ngit push origin v1.0.0\ngit push origin --tags\n```\n\n删除本地 tag：\n```bash\ngit tag -d v1.0.0\n```\n\n删除远程 tag：\n```bash\ngit push origin --delete tag v1.0.0\n```\n\n用途：\n1. 标记发布版本。\n2. 标记重要里程碑。\n3. 方便回滚到某个稳定版本。\n\n面试重点：branch 会继续移动，tag 通常固定指向某个提交。",
+            "difficulty": "easy",
+            "tags": [
+                "git tag",
+                "版本发布",
+                "release"
+            ]
+        },
+        {
+            "id": "linux-git-046",
+            "question": "git reflog 是什么？什么时候用？",
+            "answer": "`git reflog` 记录 HEAD 和分支引用的移动历史。\n\n适合场景：\n1. reset 错了想找回提交。\n2. rebase 出问题想恢复。\n3. 分支误删后找回 commit。\n4. 想查看 HEAD 最近移动记录。\n\n命令：\n```bash\ngit reflog\n```\n\n找回例子：\n```bash\ngit reflog\ngit reset --hard <commit_id>\n```\n\n注意：\n1. reflog 是本地记录，不是远程共享历史。\n2. reflog 记录也会过期清理。\n\n面试重点：误操作后不要慌，先看 git reflog，很多本地提交都能找回来。",
+            "difficulty": "medium",
+            "tags": [
+                "git reflog",
+                "误操作恢复",
+                "HEAD"
+            ]
+        },
+        {
+            "id": "linux-git-047",
+            "question": "git blame 是什么？适合什么场景？",
+            "answer": "`git blame` 用于查看文件中每一行最后是谁在什么时候修改的，以及对应 commit。\n\n命令：\n```bash\ngit blame file.txt\ngit blame -L 10,30 file.txt\n```\n\n适合场景：\n1. 追踪某一行代码的来源。\n2. 找到引入 bug 的提交。\n3. 了解某段逻辑的历史背景。\n4. 联系相关作者确认需求或实现原因。\n\n注意：\n`blame` 不是为了甩锅，而是为了理解代码演进和快速定位上下文。\n\n面试重点：git blame 可以定位代码行最后一次修改记录。",
+            "difficulty": "easy",
+            "tags": [
+                "git blame",
+                "代码追踪",
+                "提交记录"
+            ]
+        },
+        {
+            "id": "linux-git-048",
+            "question": "git bisect 是什么？如何用它定位 bug？",
+            "answer": "`git bisect` 使用二分查找在提交历史中定位引入 bug 的 commit。\n\n使用步骤：\n```bash\ngit bisect start\ngit bisect bad\ngit bisect good <good_commit>\n```\n\n然后 Git 会切到中间某个提交。你测试后标记：\n```bash\ngit bisect good\n```\n或者：\n```bash\ngit bisect bad\n```\n\n重复几轮后，Git 会找到第一个引入问题的提交。\n\n结束：\n```bash\ngit bisect reset\n```\n\n适合场景：\n1. 以前正常，现在坏了。\n2. 不知道是哪次提交引入 bug。\n3. 提交历史很多，人工排查效率低。\n\n面试重点：git bisect 是用二分法定位问题提交，非常适合回归 bug 排查。",
+            "difficulty": "hard",
+            "tags": [
+                "git bisect",
+                "bug定位",
+                "二分查找"
+            ]
+        },
+        {
+            "id": "linux-git-049",
+            "question": ".gitignore 有什么作用？已经被 Git 跟踪的文件还能被 .gitignore 忽略吗？",
+            "answer": ".gitignore 用于告诉 Git 忽略某些未被跟踪的文件。\n\n常见忽略内容：\n1. 编译产物。\n2. 日志文件。\n3. IDE 配置。\n4. 临时文件。\n5. 密钥和本地环境配置。\n\n例子：\n```gitignore\n*.log\ntarget/\nnode_modules/\n.env\n.idea/\n```\n\n注意：\n如果文件已经被 Git 跟踪，后来加入 .gitignore 不会自动停止跟踪。\n\n需要执行：\n```bash\ngit rm --cached file.txt\n```\n\n如果是目录：\n```bash\ngit rm -r --cached target/\n```\n\n然后提交修改。\n\n面试重点：.gitignore 只对未跟踪文件生效，已跟踪文件要先 rm --cached。",
+            "difficulty": "medium",
+            "tags": [
+                ".gitignore",
+                "git rm --cached",
+                "忽略文件"
+            ]
+        },
+        {
+            "id": "linux-git-050",
+            "question": "团队协作中 Git 常见工作流有哪些？",
+            "answer": "常见 Git 工作流：\n\n1. Git Flow：\n包含 main/master、develop、feature、release、hotfix 等分支。\n适合发布节奏较明确的项目，但流程较重。\n\n2. GitHub Flow：\n主分支保持可发布状态，开发从 main 拉 feature 分支，通过 Pull Request 合并。\n适合持续交付和轻量协作。\n\n3. GitLab Flow：\n结合环境分支和发布分支，例如 main、pre-production、production。\n适合有多环境部署流程的团队。\n\n常见实践：\n1. 功能开发使用 feature 分支。\n2. 合并前提交 Pull Request 或 Merge Request。\n3. 通过 Code Review。\n4. CI 通过后合并。\n5. 禁止直接 push 到主分支。\n6. 发布打 tag。\n\n面试重点：Git 工作流没有唯一标准，关键是保护主分支、代码评审、CI 校验和可回滚。",
+            "difficulty": "medium",
+            "tags": [
+                "Git工作流",
+                "Git Flow",
+                "GitHub Flow",
+                "Code Review"
+            ]
+        }
+    ]
+}

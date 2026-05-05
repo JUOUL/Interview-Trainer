@@ -1,0 +1,465 @@
+{
+    "id": "spring-boot",
+    "name": "Spring Boot",
+    "description": "面向 Java 后端面试的 Spring Boot 高频题库，覆盖 Spring IoC、Bean 生命周期、循环依赖、AOP、事务、Spring MVC、自动配置、Starter、配置加载、过滤器拦截器与工程实践问题。",
+    "questions": [
+        {
+            "id": "spring-boot-001",
+            "question": "Spring 和 Spring Boot 有什么区别？",
+            "answer": "Spring 是一个基础框架，核心能力包括 IoC、AOP、事务管理、MVC、数据访问等。\n\nSpring Boot 是基于 Spring 的快速开发框架，主要目标是简化 Spring 应用的配置和部署。\n\n主要区别：\n1. Spring 需要较多手动配置，例如 XML 或 Java Config。\n2. Spring Boot 提供自动配置，减少样板配置。\n3. Spring Boot 内置嵌入式服务器，例如 Tomcat、Jetty，可以直接运行 jar 包。\n4. Spring Boot 提供 Starter 机制，统一管理依赖组合。\n5. Spring Boot 提供 Actuator，方便健康检查、监控和运维。\n\n一句话：Spring 提供核心能力，Spring Boot 让 Spring 项目更容易搭建、运行和部署。",
+            "difficulty": "easy",
+            "tags": [
+                "Spring",
+                "Spring Boot",
+                "自动配置",
+                "Starter"
+            ]
+        },
+        {
+            "id": "spring-boot-002",
+            "question": "Spring Boot 的核心优势是什么？",
+            "answer": "Spring Boot 的核心优势主要有：\n1. 自动配置：根据 classpath 中的依赖和配置自动创建 Bean。\n2. Starter 依赖：把常用依赖组合封装起来，减少版本冲突和配置成本。\n3. 嵌入式 Web 容器：可以直接运行 jar 包，不需要外部部署 Tomcat。\n4. 约定大于配置：提供默认配置，开发者只需要关注差异化配置。\n5. Actuator：提供健康检查、指标监控、环境信息等运维能力。\n6. 外部化配置：支持 properties、yaml、环境变量、命令行参数等多种配置来源。\n\n面试重点：Spring Boot 不是替代 Spring，而是简化 Spring 应用开发。",
+            "difficulty": "easy",
+            "tags": [
+                "Spring Boot",
+                "自动配置",
+                "约定大于配置"
+            ]
+        },
+        {
+            "id": "spring-boot-003",
+            "question": "@SpringBootApplication 注解包含哪些核心注解？",
+            "answer": "`@SpringBootApplication` 是一个组合注解，主要包含三个核心注解：\n\n1. `@SpringBootConfiguration`\n   - 本质上是 `@Configuration`。\n   - 表示当前类是配置类。\n\n2. `@EnableAutoConfiguration`\n   - 开启 Spring Boot 自动配置。\n   - 根据依赖和条件注解决定是否创建某些 Bean。\n\n3. `@ComponentScan`\n   - 开启组件扫描。\n   - 默认扫描启动类所在包及其子包下的组件。\n\n面试重点：启动类位置很重要。如果启动类放得太深，可能扫描不到其他包下的 Controller、Service、Component。",
+            "difficulty": "easy",
+            "tags": [
+                "@SpringBootApplication",
+                "自动配置",
+                "组件扫描"
+            ]
+        },
+        {
+            "id": "spring-boot-004",
+            "question": "Spring Boot 自动配置的原理是什么？",
+            "answer": "Spring Boot 自动配置的核心是 `@EnableAutoConfiguration`。\n\n大致流程：\n1. 启动类上的 `@SpringBootApplication` 包含 `@EnableAutoConfiguration`。\n2. Spring Boot 会加载自动配置类列表。\n3. 自动配置类中通过 `@ConditionalOnClass`、`@ConditionalOnMissingBean`、`@ConditionalOnProperty` 等条件注解决定是否生效。\n4. 如果条件满足，就自动向容器中注册 Bean。\n5. 用户自己定义的 Bean 通常可以覆盖默认自动配置。\n\n例如：\n如果 classpath 中有 Spring MVC 相关依赖，Spring Boot 会自动配置 DispatcherServlet、HandlerMapping、MessageConverter 等。\n\n面试关键词：自动配置 = 自动配置类 + 条件注解 + 默认 Bean + 用户配置覆盖。",
+            "difficulty": "hard",
+            "tags": [
+                "自动配置",
+                "@EnableAutoConfiguration",
+                "条件注解",
+                "AutoConfiguration"
+            ]
+        },
+        {
+            "id": "spring-boot-005",
+            "question": "Spring Boot Starter 是什么？为什么要有 Starter？",
+            "answer": "Starter 是 Spring Boot 提供的一种依赖聚合机制。\n\n它本身通常不包含具体业务代码，而是把某个功能所需的依赖组合起来，并配合自动配置使用。\n\n例如：\n1. `spring-boot-starter-web` 包含 Spring MVC、Tomcat、Jackson 等 Web 开发常用依赖。\n2. `spring-boot-starter-data-redis` 包含 Redis 相关依赖和自动配置支持。\n3. `spring-boot-starter-test` 包含 JUnit、Mockito、Spring Test 等测试依赖。\n\n优点：\n1. 减少手动引入多个依赖。\n2. 降低版本冲突风险。\n3. 配合自动配置，开箱即用。\n4. 方便封装公司内部统一组件。\n\n面试重点：Starter 解决的是依赖组合问题，AutoConfiguration 解决的是 Bean 自动创建问题。",
+            "difficulty": "medium",
+            "tags": [
+                "Starter",
+                "依赖管理",
+                "自动配置"
+            ]
+        },
+        {
+            "id": "spring-boot-006",
+            "question": "Spring IoC 是什么？它解决了什么问题？",
+            "answer": "IoC 是 Inversion of Control，控制反转。\n\n传统方式中，对象由程序员自己创建和管理：\n```java\nUserService service = new UserServiceImpl();\n```\n\nSpring IoC 中，对象创建、依赖注入、生命周期管理交给 Spring 容器完成。\n\n它解决的问题：\n1. 降低对象之间的耦合。\n2. 统一管理对象生命周期。\n3. 方便做 AOP、事务、代理增强。\n4. 方便替换实现类和进行单元测试。\n\nDI 是 Dependency Injection，依赖注入，是实现 IoC 的主要方式。\n\n面试关键词：IoC 是思想，DI 是实现方式，Spring 容器负责创建和装配 Bean。",
+            "difficulty": "easy",
+            "tags": [
+                "IoC",
+                "DI",
+                "Spring容器"
+            ]
+        },
+        {
+            "id": "spring-boot-007",
+            "question": "BeanFactory 和 ApplicationContext 有什么区别？",
+            "answer": "BeanFactory 是 Spring 最基础的 IoC 容器接口，提供 Bean 的创建和获取能力。\n\nApplicationContext 是 BeanFactory 的子接口，提供了更多企业级功能。\n\n主要区别：\n1. BeanFactory 功能更基础，偏底层。\n2. ApplicationContext 功能更完整，支持国际化、事件发布、资源加载、AOP 集成等。\n3. BeanFactory 默认延迟加载 Bean。\n4. ApplicationContext 通常在容器启动时就实例化非懒加载单例 Bean。\n5. 实际开发中基本都使用 ApplicationContext。\n\n面试重点：BeanFactory 是基础容器，ApplicationContext 是增强版容器。",
+            "difficulty": "medium",
+            "tags": [
+                "BeanFactory",
+                "ApplicationContext",
+                "IoC容器"
+            ]
+        },
+        {
+            "id": "spring-boot-008",
+            "question": "Spring Bean 的作用域有哪些？默认是哪种？",
+            "answer": "Spring Bean 常见作用域：\n1. singleton：单例，默认作用域。整个 Spring 容器中只有一个 Bean 实例。\n2. prototype：每次获取 Bean 都创建一个新实例。\n3. request：每个 HTTP 请求创建一个 Bean，仅 Web 环境可用。\n4. session：每个 HTTP Session 创建一个 Bean。\n5. application：每个 ServletContext 创建一个 Bean。\n6. websocket：每个 WebSocket 会话创建一个 Bean。\n\n默认作用域是 singleton。\n\n注意：\n1. singleton 不是 JVM 全局单例，而是 Spring 容器级别单例。\n2. prototype Bean 的创建由 Spring 管理，但销毁通常不由 Spring 完整管理。\n3. 单例 Bean 中不要保存用户级别的可变状态，否则可能出现线程安全问题。",
+            "difficulty": "easy",
+            "tags": [
+                "Bean作用域",
+                "singleton",
+                "prototype"
+            ]
+        },
+        {
+            "id": "spring-boot-009",
+            "question": "Spring Bean 的生命周期是怎样的？",
+            "answer": "Spring Bean 生命周期大致流程：\n1. 实例化 Bean：通过构造方法创建对象。\n2. 属性填充：进行依赖注入。\n3. Aware 回调：例如 BeanNameAware、ApplicationContextAware。\n4. BeanPostProcessor 前置处理。\n5. 初始化：执行 `@PostConstruct`、InitializingBean、init-method。\n6. BeanPostProcessor 后置处理，AOP 代理通常在这里生成。\n7. Bean 可以被使用。\n8. 容器关闭时执行销毁逻辑，例如 `@PreDestroy`、DisposableBean、destroy-method。\n\n面试重点：\n- 实例化和初始化不是一回事。\n- AOP 代理通常由 BeanPostProcessor 在初始化后生成。\n- 依赖注入发生在初始化之前。",
+            "difficulty": "hard",
+            "tags": [
+                "Bean生命周期",
+                "BeanPostProcessor",
+                "初始化",
+                "AOP"
+            ]
+        },
+        {
+            "id": "spring-boot-010",
+            "question": "BeanPostProcessor 有什么作用？",
+            "answer": "BeanPostProcessor 是 Spring 提供的 Bean 后置处理器，可以在 Bean 初始化前后插入自定义逻辑。\n\n核心方法：\n1. `postProcessBeforeInitialization`：初始化方法执行前调用。\n2. `postProcessAfterInitialization`：初始化方法执行后调用。\n\n常见用途：\n1. AOP 代理对象生成。\n2. 处理注解，例如 `@Autowired`、`@PostConstruct`。\n3. 对 Bean 做增强、包装或校验。\n4. 框架扩展点。\n\n面试重点：BeanPostProcessor 是 Spring 框架扩展能力的关键入口，很多注解和 AOP 都依赖它。",
+            "difficulty": "hard",
+            "tags": [
+                "BeanPostProcessor",
+                "Bean生命周期",
+                "AOP",
+                "扩展点"
+            ]
+        },
+        {
+            "id": "spring-boot-011",
+            "question": "@Autowired 和 @Resource 有什么区别？",
+            "answer": "主要区别：\n1. `@Autowired` 是 Spring 提供的注解，默认按类型注入。\n2. `@Resource` 是 Java 标准注解，默认按名称注入。\n3. `@Autowired` 如果存在多个同类型 Bean，需要配合 `@Qualifier` 指定名称。\n4. `@Resource` 可以通过 name 属性指定 Bean 名称。\n5. `@Autowired` 默认 required=true，找不到 Bean 会报错；可以设置 required=false。\n\n示例：\n```java\n@Autowired\n@Qualifier(\"userServiceImpl\")\nprivate UserService userService;\n\n@Resource(name = \"userServiceImpl\")\nprivate UserService userService;\n```\n\n面试关键词：Autowired 默认按类型，Resource 默认按名称。",
+            "difficulty": "medium",
+            "tags": [
+                "@Autowired",
+                "@Resource",
+                "依赖注入"
+            ]
+        },
+        {
+            "id": "spring-boot-012",
+            "question": "构造器注入、Setter 注入、字段注入有什么区别？推荐哪种？",
+            "answer": "三种注入方式：\n1. 字段注入：直接在成员变量上使用 `@Autowired`。\n2. Setter 注入：通过 setter 方法注入。\n3. 构造器注入：通过构造方法注入依赖。\n\n推荐使用构造器注入。\n\n原因：\n1. 可以保证依赖不可变，适合配合 final 字段。\n2. 创建对象时必须提供依赖，避免依赖为空。\n3. 更利于单元测试。\n4. 能更早暴露循环依赖问题。\n5. 不依赖反射强行设置私有字段。\n\n字段注入的问题：\n1. 不利于测试。\n2. 依赖关系不够明显。\n3. 可能隐藏循环依赖。\n\n面试重点：构造器注入更推荐，字段注入虽然方便但工程质量较差。",
+            "difficulty": "medium",
+            "tags": [
+                "依赖注入",
+                "构造器注入",
+                "字段注入"
+            ]
+        },
+        {
+            "id": "spring-boot-013",
+            "question": "Spring 如何解决循环依赖？",
+            "answer": "Spring 主要通过三级缓存解决单例 Bean 的循环依赖。\n\n三级缓存：\n1. 一级缓存 singletonObjects：存放完全初始化好的单例 Bean。\n2. 二级缓存 earlySingletonObjects：存放提前暴露的早期 Bean。\n3. 三级缓存 singletonFactories：存放可以生成早期 Bean 引用的 ObjectFactory。\n\n解决流程简化理解：\n1. 创建 A，实例化后还没完成属性注入。\n2. Spring 提前把 A 的 ObjectFactory 放入三级缓存。\n3. A 注入 B，需要创建 B。\n4. B 注入 A 时，从三级缓存拿到 A 的早期引用。\n5. B 创建完成后，A 继续完成注入和初始化。\n\n限制：\n1. 只能解决单例 Bean 的属性注入循环依赖。\n2. 构造器循环依赖无法解决。\n3. prototype Bean 循环依赖无法解决。\n4. 如果涉及 AOP，需要三级缓存暴露代理对象而不是原始对象。",
+            "difficulty": "hard",
+            "tags": [
+                "循环依赖",
+                "三级缓存",
+                "单例Bean",
+                "AOP"
+            ]
+        },
+        {
+            "id": "spring-boot-014",
+            "question": "为什么构造器注入的循环依赖无法解决？",
+            "answer": "构造器注入要求对象在创建时就必须拿到所有依赖。\n\n假设 A 构造器依赖 B，B 构造器又依赖 A：\n1. 创建 A 需要先创建 B。\n2. 创建 B 又需要先创建 A。\n3. 此时 A 还没有实例化完成，无法提前暴露引用。\n4. 两者互相等待，Spring 无法打破这个环。\n\n而属性注入可以解决，是因为对象可以先实例化，再填充属性。Spring 能在实例化后、初始化前提前暴露早期引用。\n\n面试重点：三级缓存解决循环依赖的前提是 Bean 已经完成实例化。构造器循环依赖连对象都没创建出来，所以无法提前暴露。",
+            "difficulty": "hard",
+            "tags": [
+                "循环依赖",
+                "构造器注入",
+                "三级缓存"
+            ]
+        },
+        {
+            "id": "spring-boot-015",
+            "question": "Spring AOP 是什么？底层如何实现？",
+            "answer": "AOP 是 Aspect Oriented Programming，面向切面编程。\n\n它用于把日志、权限、事务、监控、限流等横切逻辑从业务代码中抽离出来，统一增强。\n\nSpring AOP 底层主要基于动态代理：\n1. 如果目标类实现了接口，默认可以使用 JDK 动态代理。\n2. 如果目标类没有实现接口，通常使用 CGLIB 生成子类代理。\n3. Spring Boot 现代版本中经常默认倾向使用 CGLIB，但具体行为和配置有关。\n\n核心概念：\n1. Join Point：连接点，方法执行点。\n2. Pointcut：切点，匹配哪些方法。\n3. Advice：通知，增强逻辑。\n4. Aspect：切面，切点和通知的组合。\n5. Weaving：织入，把增强逻辑应用到目标对象。\n\n面试重点：Spring AOP 是运行时代理，不是直接修改源码。",
+            "difficulty": "medium",
+            "tags": [
+                "AOP",
+                "动态代理",
+                "JDK代理",
+                "CGLIB"
+            ]
+        },
+        {
+            "id": "spring-boot-016",
+            "question": "JDK 动态代理和 CGLIB 动态代理有什么区别？",
+            "answer": "主要区别：\n1. JDK 动态代理基于接口生成代理对象。\n2. CGLIB 基于继承生成目标类的子类代理。\n3. 如果目标类实现了接口，可以使用 JDK 动态代理。\n4. 如果目标类没有实现接口，可以使用 CGLIB。\n5. final 类不能被 CGLIB 代理，因为无法继承。\n6. final 方法不能被 CGLIB 增强，因为无法重写。\n\n性能方面：\n早期 CGLIB 可能更快，但现代 JVM 对 JDK 动态代理优化很多，实际性能差异通常不是首要考虑。\n\n面试重点：JDK 代理看接口，CGLIB 代理看继承。",
+            "difficulty": "medium",
+            "tags": [
+                "JDK动态代理",
+                "CGLIB",
+                "AOP",
+                "代理模式"
+            ]
+        },
+        {
+            "id": "spring-boot-017",
+            "question": "Spring AOP 为什么同一个类内部方法调用会导致切面失效？",
+            "answer": "因为 Spring AOP 是基于代理对象实现的。\n\n切面生效的前提是：调用经过代理对象。\n\n同类内部调用时：\n```java\npublic void a() {\n    b();\n}\n\n@Transactional\npublic void b() {}\n```\n`a()` 内部调用 `b()`，本质是 `this.b()`，没有经过 Spring 代理对象，所以事务、日志等切面不会生效。\n\n解决方式：\n1. 把被增强的方法放到另一个 Bean 中，通过 Bean 调用。\n2. 从 Spring 容器中获取当前代理对象再调用。\n3. 使用 AspectJ 编译期或加载期织入，但复杂度更高。\n\n面试关键词：代理失效的本质是调用没有经过代理对象。",
+            "difficulty": "hard",
+            "tags": [
+                "AOP失效",
+                "代理对象",
+                "自调用",
+                "事务失效"
+            ]
+        },
+        {
+            "id": "spring-boot-018",
+            "question": "Spring 事务的传播行为有哪些？最常用的是哪个？",
+            "answer": "Spring 事务传播行为定义了一个事务方法调用另一个事务方法时，事务如何传播。\n\n常见传播行为：\n1. REQUIRED：默认值。如果当前有事务，就加入；没有事务，就新建。\n2. REQUIRES_NEW：总是新建事务，如果当前有事务则挂起当前事务。\n3. SUPPORTS：当前有事务就加入，没有事务就非事务执行。\n4. NOT_SUPPORTED：以非事务方式执行，如果当前有事务则挂起。\n5. MANDATORY：必须在已有事务中执行，否则抛异常。\n6. NEVER：必须非事务执行，如果当前有事务则抛异常。\n7. NESTED：如果当前有事务，则在嵌套事务中执行，通常基于保存点。\n\n最常用的是 REQUIRED。\n\n面试重点：REQUIRED 是加入或新建，REQUIRES_NEW 是一定新建并挂起外层事务。",
+            "difficulty": "medium",
+            "tags": [
+                "事务传播",
+                "@Transactional",
+                "REQUIRED",
+                "REQUIRES_NEW"
+            ]
+        },
+        {
+            "id": "spring-boot-019",
+            "question": "Spring 事务什么时候会失效？",
+            "answer": "常见事务失效场景：\n1. 方法不是 public。Spring AOP 默认主要代理 public 方法。\n2. 同一个类内部方法调用，没有经过代理对象。\n3. 异常被 catch 掉，没有继续抛出。\n4. 默认只对 RuntimeException 和 Error 回滚，Checked Exception 默认不回滚。\n5. 数据库本身不支持事务，例如 MyISAM。\n6. 没有被 Spring 管理，自己 new 出来的对象事务不会生效。\n7. `@Transactional` 标在 private、static、final 方法上可能失效。\n8. 多线程中直接开启新线程，事务上下文不会自动传递。\n\n解决思路：\n1. 确保方法通过 Spring Bean 代理调用。\n2. 正确配置 rollbackFor。\n3. 不要吞异常。\n4. 确认数据库和表引擎支持事务。\n\n面试重点：事务失效大多数和 AOP 代理机制有关。",
+            "difficulty": "hard",
+            "tags": [
+                "事务失效",
+                "@Transactional",
+                "AOP",
+                "异常回滚"
+            ]
+        },
+        {
+            "id": "spring-boot-020",
+            "question": "@Transactional 默认回滚哪些异常？如何让 Checked Exception 也回滚？",
+            "answer": "`@Transactional` 默认只对 RuntimeException 和 Error 回滚。\n\n对于 Checked Exception，默认不会回滚。\n\n如果希望 Checked Exception 也回滚，需要显式配置：\n```java\n@Transactional(rollbackFor = Exception.class)\npublic void save() throws Exception {\n    // business code\n}\n```\n\n常见误区：\n1. 方法里 catch 了异常但没有重新抛出，事务管理器感知不到异常，不会回滚。\n2. 抛出 Checked Exception 时没有配置 rollbackFor，默认不回滚。\n3. 手动设置回滚也可以使用 `TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()`，但业务代码侵入性较强。\n\n面试关键词：默认 RuntimeException/Error 回滚，Checked Exception 需要 rollbackFor。",
+            "difficulty": "medium",
+            "tags": [
+                "@Transactional",
+                "事务回滚",
+                "Checked Exception",
+                "rollbackFor"
+            ]
+        },
+        {
+            "id": "spring-boot-021",
+            "question": "Spring 事务的隔离级别有哪些？和数据库隔离级别是什么关系？",
+            "answer": "Spring 事务隔离级别本质上是对数据库事务隔离级别的封装。\n\n常见隔离级别：\n1. DEFAULT：使用数据库默认隔离级别。\n2. READ_UNCOMMITTED：读未提交，可能出现脏读、不可重复读、幻读。\n3. READ_COMMITTED：读已提交，解决脏读，但可能不可重复读和幻读。\n4. REPEATABLE_READ：可重复读，解决脏读和不可重复读，MySQL InnoDB 默认级别。\n5. SERIALIZABLE：串行化，隔离性最高，并发性能最低。\n\n关系：\nSpring 只是设置事务隔离级别，真正执行的是底层数据库。\n\n面试重点：Spring 事务隔离不是 Spring 自己实现数据隔离，而是依赖数据库能力。",
+            "difficulty": "medium",
+            "tags": [
+                "事务隔离级别",
+                "数据库事务",
+                "Spring事务"
+            ]
+        },
+        {
+            "id": "spring-boot-022",
+            "question": "Spring MVC 的请求处理流程是什么？",
+            "answer": "Spring MVC 请求处理流程：\n1. 请求先到达 DispatcherServlet。\n2. DispatcherServlet 通过 HandlerMapping 找到对应的 Handler，也就是 Controller 方法。\n3. HandlerAdapter 负责调用具体 Handler。\n4. 执行 Controller 方法，处理业务逻辑。\n5. 返回 ModelAndView、对象、字符串或 ResponseEntity 等结果。\n6. 如果是视图渲染，ViewResolver 解析视图并渲染。\n7. 如果是 `@ResponseBody` 或 REST 接口，HttpMessageConverter 把返回对象转换成 JSON 等响应体。\n8. 最终返回 HTTP 响应。\n\n面试关键词：DispatcherServlet 是前端控制器，是 Spring MVC 的核心入口。",
+            "difficulty": "medium",
+            "tags": [
+                "Spring MVC",
+                "DispatcherServlet",
+                "HandlerMapping",
+                "HandlerAdapter"
+            ]
+        },
+        {
+            "id": "spring-boot-023",
+            "question": "@Controller 和 @RestController 有什么区别？",
+            "answer": "`@Controller` 用于定义控制器，通常返回视图名。\n\n如果要返回 JSON，需要在方法上加 `@ResponseBody`。\n\n`@RestController` 是组合注解，相当于：\n```java\n@Controller\n@ResponseBody\n```\n\n区别：\n1. `@Controller` 更适合传统 MVC 页面渲染。\n2. `@RestController` 更适合 REST API。\n3. `@RestController` 中方法返回对象时，会通过 HttpMessageConverter 转成 JSON 或其他格式。\n\n示例：\n```java\n@RestController\npublic class UserController {\n    @GetMapping(\"/user\")\n    public User getUser() {\n        return new User();\n    }\n}\n```\n\n面试重点：RestController 默认所有方法都带 ResponseBody 语义。",
+            "difficulty": "easy",
+            "tags": [
+                "@Controller",
+                "@RestController",
+                "@ResponseBody"
+            ]
+        },
+        {
+            "id": "spring-boot-024",
+            "question": "@RequestParam、@PathVariable、@RequestBody 有什么区别？",
+            "answer": "三者用于绑定不同来源的请求参数。\n\n1. `@RequestParam`\n   - 获取 query 参数或表单参数。\n   - 例如 `/user?id=1` 中的 id。\n\n2. `@PathVariable`\n   - 获取路径变量。\n   - 例如 `/user/1` 中的 1。\n\n3. `@RequestBody`\n   - 读取请求体内容。\n   - 常用于 JSON 请求体，配合 POST、PUT。\n\n示例：\n```java\n@GetMapping(\"/user/{id}\")\npublic User get(@PathVariable Long id) {}\n\n@PostMapping(\"/user\")\npublic void save(@RequestBody User user) {}\n```\n\n面试重点：GET 常用 RequestParam/PathVariable，POST JSON 常用 RequestBody。",
+            "difficulty": "easy",
+            "tags": [
+                "@RequestParam",
+                "@PathVariable",
+                "@RequestBody",
+                "参数绑定"
+            ]
+        },
+        {
+            "id": "spring-boot-025",
+            "question": "过滤器 Filter、拦截器 Interceptor、AOP 有什么区别？",
+            "answer": "三者拦截层次不同：\n\n1. Filter：Servlet 规范的一部分，作用在请求进入 Servlet 之前和响应返回之后。\n   - 适合编码处理、跨域、日志、鉴权粗过滤。\n\n2. Interceptor：Spring MVC 提供，作用在 DispatcherServlet 之后、Controller 方法前后。\n   - 适合登录校验、权限判断、接口日志、参数预处理。\n\n3. AOP：Spring 代理机制，作用在 Bean 方法调用层面。\n   - 适合事务、日志、权限、监控、方法级增强。\n\n执行顺序大致：\n请求 -> Filter -> DispatcherServlet -> Interceptor -> Controller/AOP -> Interceptor -> Filter -> 响应。\n\n面试重点：Filter 是 Servlet 层，Interceptor 是 Spring MVC 层，AOP 是方法代理层。",
+            "difficulty": "medium",
+            "tags": [
+                "Filter",
+                "Interceptor",
+                "AOP",
+                "请求链路"
+            ]
+        },
+        {
+            "id": "spring-boot-026",
+            "question": "Spring Boot 配置文件加载优先级是怎样的？",
+            "answer": "Spring Boot 支持多种配置来源，常见优先级从高到低大致包括：\n1. 命令行参数。\n2. Java 系统属性。\n3. 操作系统环境变量。\n4. 外部配置文件。\n5. 项目内部配置文件。\n6. 默认配置。\n\n常见配置文件：\n1. `application.properties`。\n2. `application.yml`。\n3. `application-{profile}.yml`。\n\nProfile 配置：\n```yaml\nspring:\n  profiles:\n    active: dev\n```\n表示启用 `application-dev.yml`。\n\n面试重点：外部配置通常优先于 jar 包内部配置，命令行参数优先级很高，适合部署时覆盖配置。",
+            "difficulty": "medium",
+            "tags": [
+                "配置文件",
+                "Profile",
+                "外部化配置"
+            ]
+        },
+        {
+            "id": "spring-boot-027",
+            "question": "@Value 和 @ConfigurationProperties 有什么区别？",
+            "answer": "`@Value` 和 `@ConfigurationProperties` 都可以读取配置，但使用场景不同。\n\n`@Value`：\n1. 适合读取单个配置项。\n2. 支持 SpEL 表达式。\n3. 配置分散时维护成本较高。\n\n`@ConfigurationProperties`：\n1. 适合绑定一组有层次结构的配置。\n2. 类型安全，支持复杂对象、List、Map。\n3. 更适合工程化配置管理。\n4. 可以配合配置元数据生成 IDE 提示。\n\n示例：\n```java\n@ConfigurationProperties(prefix = \"app\")\npublic class AppProperties {\n    private String name;\n    private Integer timeout;\n}\n```\n\n面试重点：少量配置用 Value，一组配置优先 ConfigurationProperties。",
+            "difficulty": "medium",
+            "tags": [
+                "@Value",
+                "@ConfigurationProperties",
+                "配置绑定"
+            ]
+        },
+        {
+            "id": "spring-boot-028",
+            "question": "Spring Boot 中如何实现多环境配置？",
+            "answer": "Spring Boot 通过 Profile 实现多环境配置。\n\n常见做法：\n1. `application.yml` 放通用配置。\n2. `application-dev.yml` 放开发环境配置。\n3. `application-test.yml` 放测试环境配置。\n4. `application-prod.yml` 放生产环境配置。\n\n启用方式：\n```yaml\nspring:\n  profiles:\n    active: dev\n```\n\n也可以通过命令行指定：\n```bash\njava -jar app.jar --spring.profiles.active=prod\n```\n\n实际工程建议：\n1. 生产敏感信息不要直接写在代码仓库。\n2. 可以结合配置中心或环境变量。\n3. 不同环境的数据库、Redis、MQ、日志级别应隔离。\n\n面试重点：Profile 解决不同环境配置切换问题。",
+            "difficulty": "easy",
+            "tags": [
+                "Profile",
+                "多环境配置",
+                "application.yml"
+            ]
+        },
+        {
+            "id": "spring-boot-029",
+            "question": "Spring Boot Actuator 有什么作用？",
+            "answer": "Actuator 是 Spring Boot 提供的应用监控和管理模块。\n\n常见能力：\n1. 健康检查：`/actuator/health`。\n2. 应用信息：`/actuator/info`。\n3. 指标监控：`/actuator/metrics`。\n4. 环境变量：`/actuator/env`。\n5. Bean 信息：`/actuator/beans`。\n6. 线程信息：`/actuator/threaddump`。\n7. 堆转储：`/actuator/heapdump`。\n\n实际用途：\n1. 配合 Kubernetes 做健康探针。\n2. 配合 Prometheus/Grafana 做监控。\n3. 排查线上配置、线程、内存问题。\n\n注意：生产环境不要暴露敏感端点，必须做权限控制和网络隔离。\n\n面试重点：Actuator 是 Spring Boot 运维监控能力的核心。",
+            "difficulty": "medium",
+            "tags": [
+                "Actuator",
+                "健康检查",
+                "监控",
+                "运维"
+            ]
+        },
+        {
+            "id": "spring-boot-030",
+            "question": "Spring Boot 内嵌 Tomcat 是怎么启动的？",
+            "answer": "Spring Boot Web 应用默认可以内嵌 Tomcat。\n\n大致流程：\n1. 启动 `SpringApplication.run()`。\n2. 创建 ApplicationContext。\n3. 如果是 Web 应用，会创建 ServletWebServerApplicationContext。\n4. 容器刷新过程中创建 WebServer。\n5. 根据依赖自动配置 TomcatServletWebServerFactory。\n6. 通过工厂创建并启动内嵌 Tomcat。\n7. 注册 DispatcherServlet、Filter、Listener 等组件。\n\n优势：\n1. 不需要外部 Tomcat。\n2. 可以直接打成可执行 jar。\n3. 部署和容器化更方便。\n\n面试重点：Spring Boot 不是没有 Tomcat，而是把 Tomcat 嵌入到应用进程中启动。",
+            "difficulty": "hard",
+            "tags": [
+                "内嵌Tomcat",
+                "SpringApplication",
+                "WebServer"
+            ]
+        },
+        {
+            "id": "spring-boot-031",
+            "question": "Spring Boot 启动流程大致是什么？",
+            "answer": "Spring Boot 启动大致流程：\n1. 调用 `SpringApplication.run()`。\n2. 推断应用类型，例如普通应用、Servlet Web 应用、Reactive Web 应用。\n3. 加载 ApplicationContextInitializer 和 ApplicationListener。\n4. 准备 Environment，加载配置文件和环境变量。\n5. 创建 ApplicationContext。\n6. 加载 BeanDefinition。\n7. 执行自动配置。\n8. 刷新容器，实例化非懒加载单例 Bean。\n9. 如果是 Web 应用，启动内嵌服务器。\n10. 执行 CommandLineRunner、ApplicationRunner。\n\n面试重点：启动流程核心是准备环境、创建容器、加载 Bean、自动配置、刷新容器、启动 WebServer。",
+            "difficulty": "hard",
+            "tags": [
+                "Spring Boot启动流程",
+                "SpringApplication",
+                "ApplicationContext"
+            ]
+        },
+        {
+            "id": "spring-boot-032",
+            "question": "CommandLineRunner 和 ApplicationRunner 有什么区别？",
+            "answer": "两者都可以在 Spring Boot 应用启动完成后执行一些逻辑。\n\n区别：\n1. CommandLineRunner 的参数是原始字符串数组。\n2. ApplicationRunner 的参数是 ApplicationArguments，封装了命令行参数，更方便解析 option 参数和 non-option 参数。\n\n示例：\n```java\n@Component\npublic class InitRunner implements CommandLineRunner {\n    public void run(String... args) {\n        // 启动后执行\n    }\n}\n```\n\n使用场景：\n1. 启动后预加载缓存。\n2. 初始化数据。\n3. 检查外部依赖。\n4. 输出启动信息。\n\n注意：不要在 Runner 中执行耗时过长或不可控任务，否则会影响应用启动。",
+            "difficulty": "easy",
+            "tags": [
+                "CommandLineRunner",
+                "ApplicationRunner",
+                "启动后执行"
+            ]
+        },
+        {
+            "id": "spring-boot-033",
+            "question": "Spring Boot 中如何统一处理异常？",
+            "answer": "常用 `@RestControllerAdvice` + `@ExceptionHandler` 实现全局异常处理。\n\n示例：\n```java\n@RestControllerAdvice\npublic class GlobalExceptionHandler {\n    @ExceptionHandler(BusinessException.class)\n    public Result<?> handleBusiness(BusinessException e) {\n        return Result.fail(e.getMessage());\n    }\n\n    @ExceptionHandler(Exception.class)\n    public Result<?> handleException(Exception e) {\n        return Result.fail(\"系统异常\");\n    }\n}\n```\n\n好处：\n1. 避免 Controller 中重复 try-catch。\n2. 统一返回格式。\n3. 区分业务异常和系统异常。\n4. 方便记录日志和告警。\n\n注意：\n1. 不要把所有异常都吞掉。\n2. 系统异常要打印完整堆栈。\n3. 对外返回不要暴露敏感信息。\n\n面试重点：全局异常处理是 Web 项目的基本工程能力。",
+            "difficulty": "medium",
+            "tags": [
+                "全局异常处理",
+                "@RestControllerAdvice",
+                "@ExceptionHandler"
+            ]
+        },
+        {
+            "id": "spring-boot-034",
+            "question": "Spring Boot 中如何做参数校验？",
+            "answer": "Spring Boot 常用 Bean Validation 做参数校验。\n\n常见注解：\n1. `@NotNull`：不能为 null。\n2. `@NotBlank`：字符串不能为 null 且去空格后不能为空。\n3. `@NotEmpty`：集合或字符串不能为 null 且长度不能为 0。\n4. `@Min`、`@Max`：数值范围。\n5. `@Email`：邮箱格式。\n6. `@Size`：长度或集合大小限制。\n\n使用方式：\n```java\n@PostMapping(\"/user\")\npublic Result<?> save(@Valid @RequestBody UserDTO dto) {\n    return Result.ok();\n}\n```\n\n通常配合全局异常处理捕获 MethodArgumentNotValidException，统一返回错误信息。\n\n面试重点：参数校验不要只靠手写 if，推荐使用标准校验注解 + 全局异常处理。",
+            "difficulty": "medium",
+            "tags": [
+                "参数校验",
+                "@Valid",
+                "Bean Validation"
+            ]
+        },
+        {
+            "id": "spring-boot-035",
+            "question": "Spring Boot 如何实现异步任务？@Async 为什么有时会失效？",
+            "answer": "Spring Boot 可以使用 `@Async` 实现异步任务。\n\n基本步骤：\n1. 在配置类或启动类上添加 `@EnableAsync`。\n2. 在需要异步执行的方法上添加 `@Async`。\n3. 配置自定义线程池，避免使用默认线程池。\n\n示例：\n```java\n@Async(\"taskExecutor\")\npublic void sendMessage() {\n    // async task\n}\n```\n\n失效场景：\n1. 没有开启 `@EnableAsync`。\n2. 同一个类内部方法调用，没有经过代理对象。\n3. 方法不是 public。\n4. Bean 不是 Spring 容器管理的对象。\n5. 异步方法返回值使用不当，异常没有被正确处理。\n\n面试重点：@Async 本质也是基于代理，所以自调用会失效。",
+            "difficulty": "hard",
+            "tags": [
+                "@Async",
+                "异步任务",
+                "线程池",
+                "代理失效"
+            ]
+        },
+        {
+            "id": "spring-boot-036",
+            "question": "Spring Boot 如何实现定时任务？",
+            "answer": "Spring Boot 可以通过 `@Scheduled` 实现定时任务。\n\n基本步骤：\n1. 在启动类或配置类上添加 `@EnableScheduling`。\n2. 在方法上添加 `@Scheduled`。\n\n示例：\n```java\n@Scheduled(cron = \"0 0/5 * * * ?\")\npublic void syncData() {\n    // 每 5 分钟执行一次\n}\n```\n\n常见配置：\n1. fixedRate：按固定频率执行，上次开始时间到下次开始时间。\n2. fixedDelay：上次执行结束后延迟一段时间再执行。\n3. cron：使用 cron 表达式。\n\n注意：\n1. 默认定时任务可能是单线程，任务阻塞会影响其他任务。\n2. 生产环境建议配置线程池。\n3. 分布式部署时要注意重复执行问题，可以使用分布式锁或调度平台。\n\n面试重点：单机定时任务简单，分布式场景要考虑重复执行和任务幂等。",
+            "difficulty": "medium",
+            "tags": [
+                "@Scheduled",
+                "定时任务",
+                "分布式锁"
+            ]
+        },
+        {
+            "id": "spring-boot-037",
+            "question": "Spring Boot 中如何优雅关闭应用？",
+            "answer": "优雅关闭的目标是：应用停止接收新请求，同时尽量处理完已有请求和后台任务。\n\n常见做法：\n1. 开启 Spring Boot 的 graceful shutdown。\n2. 配置等待超时时间。\n3. 停止接收新流量，例如从注册中心下线或负载均衡摘除。\n4. 等待正在处理的请求完成。\n5. 关闭线程池、数据库连接池、MQ 消费者等资源。\n6. 使用 `@PreDestroy` 或 DisposableBean 做资源释放。\n\n配置示例：\n```yaml\nserver:\n  shutdown: graceful\nspring:\n  lifecycle:\n    timeout-per-shutdown-phase: 30s\n```\n\n面试重点：优雅关闭不仅是 JVM 退出，还要考虑请求、线程池、连接池、消息消费等资源收尾。",
+            "difficulty": "medium",
+            "tags": [
+                "优雅关闭",
+                "graceful shutdown",
+                "资源释放"
+            ]
+        },
+        {
+            "id": "spring-boot-038",
+            "question": "Spring Boot 项目中如何实现统一返回结果？有什么注意点？",
+            "answer": "统一返回结果通常会定义一个 Result 或 Response 类。\n\n常见字段：\n1. code：业务状态码。\n2. message：提示信息。\n3. data：返回数据。\n4. success：是否成功。\n5. traceId：链路追踪 ID，方便排查问题。\n\n示例：\n```java\npublic class Result<T> {\n    private Integer code;\n    private String message;\n    private T data;\n}\n```\n\n注意点：\n1. 不要把 HTTP 状态码和业务状态码完全混淆。\n2. 业务异常和系统异常要区分。\n3. 分页结果应有统一结构。\n4. 错误信息不要暴露敏感内部细节。\n5. 可以通过 ResponseBodyAdvice 做统一包装，但要避免重复包装和影响文件下载。\n\n面试重点：统一返回结果是接口规范问题，不是简单套一层对象。",
+            "difficulty": "medium",
+            "tags": [
+                "统一返回",
+                "接口设计",
+                "ResponseBodyAdvice"
+            ]
+        },
+        {
+            "id": "spring-boot-039",
+            "question": "Spring Boot 中如何处理跨域问题？",
+            "answer": "跨域是浏览器同源策略导致的问题。后端可以通过 CORS 配置允许指定来源访问。\n\n常见处理方式：\n1. 在 Controller 或方法上使用 `@CrossOrigin`。\n2. 全局配置 CorsRegistry。\n3. 通过 Filter 设置 CORS 响应头。\n4. 网关层统一处理跨域。\n\n示例：\n```java\n@Configuration\npublic class WebConfig implements WebMvcConfigurer {\n    public void addCorsMappings(CorsRegistry registry) {\n        registry.addMapping(\"/**\")\n                .allowedOrigins(\"https://example.com\")\n                .allowedMethods(\"GET\", \"POST\", \"PUT\", \"DELETE\")\n                .allowCredentials(true);\n    }\n}\n```\n\n注意：\n1. 生产环境不要简单允许所有来源。\n2. 如果允许携带 Cookie，不能使用通配符 `*` 作为 allowedOrigins。\n3. 复杂请求会先发送 OPTIONS 预检请求。\n\n面试重点：跨域是浏览器限制，不是后端接口本身不能访问。",
+            "difficulty": "medium",
+            "tags": [
+                "跨域",
+                "CORS",
+                "@CrossOrigin",
+                "OPTIONS"
+            ]
+        },
+        {
+            "id": "spring-boot-040",
+            "question": "Spring Boot 项目启动很慢，应该如何排查？",
+            "answer": "排查启动慢可以从以下方向入手：\n1. 看日志中哪个阶段耗时长，例如 Bean 初始化、数据库连接、Redis、MQ、远程配置中心。\n2. 检查是否有 CommandLineRunner、ApplicationRunner 执行了耗时任务。\n3. 检查是否有 Bean 在初始化时做了网络请求或大数据加载。\n4. 检查组件扫描范围是否过大。\n5. 检查是否引入了不必要的 Starter，导致自动配置过多。\n6. 使用 Actuator、启动耗时日志或 ApplicationStartup 分析启动阶段。\n7. 对非核心 Bean 使用懒加载，但要注意首次请求延迟。\n\n优化建议：\n1. 初始化任务异步化或延后执行。\n2. 精简依赖和扫描范围。\n3. 外部依赖连接设置合理超时。\n4. 不要在 Bean 构造或 PostConstruct 中做重型任务。\n\n面试重点：启动慢通常不是 Spring Boot 本身慢，而是 Bean 初始化和外部依赖阻塞导致的。",
+            "difficulty": "hard",
+            "tags": [
+                "启动优化",
+                "Bean初始化",
+                "性能排查",
+                "ApplicationStartup"
+            ]
+        }
+    ]
+}

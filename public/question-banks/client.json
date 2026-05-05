@@ -1,0 +1,602 @@
+{
+    "id": "client",
+    "name": "客户端开发",
+    "description": "面向移动端与客户端开发面试的高频题库，覆盖 Android 基础、客户端架构、性能优化、网络通信、内存泄漏、启动优化、卡顿治理、包体优化、跨端方案、音视频直播、弱网优化、稳定性治理与线上问题排查。",
+    "questions": [
+        {
+            "id": "client-001",
+            "question": "客户端开发主要做什么？和后端开发有什么区别？",
+            "answer": "客户端开发主要负责运行在用户设备上的应用程序，例如 Android App、iOS App、桌面客户端、小程序、跨端页面等。\n\n客户端开发关注：\n1. 用户界面和交互体验。\n2. 页面渲染和动画流畅度。\n3. 网络请求和数据展示。\n4. 本地缓存和离线能力。\n5. 启动速度、卡顿、内存、耗电、包体大小。\n6. 多机型、多系统版本适配。\n7. 崩溃率、ANR、线上稳定性。\n8. 音视频、直播、推送、定位、相机等设备能力。\n\n和后端区别：\n1. 后端更关注服务端业务逻辑、数据库、高并发、分布式系统。\n2. 客户端更关注用户设备环境、UI 渲染、交互体验和端上性能。\n3. 后端环境相对可控，客户端机型、系统、网络环境更复杂。\n\n面试重点：客户端不是只写页面，更重要的是体验、性能、稳定性和复杂环境适配。",
+            "difficulty": "easy",
+            "tags": [
+                "客户端基础",
+                "移动端",
+                "前后端区别"
+            ]
+        },
+        {
+            "id": "client-002",
+            "question": "Android 四大组件是什么？",
+            "answer": "Android 四大组件包括：\n\n1. Activity：负责界面展示和用户交互。\n2. Service：负责后台任务或长期运行任务。\n3. BroadcastReceiver：负责接收广播消息。\n4. ContentProvider：负责跨应用数据共享。\n\n常见理解：\n1. Activity 是页面。\n2. Service 是后台能力。\n3. BroadcastReceiver 是消息接收器。\n4. ContentProvider 是数据共享接口。\n\n注意：\nAndroid 8.0 之后对后台 Service 和隐式广播做了很多限制，所以后台任务通常会结合 WorkManager、JobScheduler、前台服务等方案。\n\n面试重点：四大组件不仅要知道名字，还要知道生命周期、启动方式和系统限制。",
+            "difficulty": "easy",
+            "tags": [
+                "Android",
+                "四大组件",
+                "Activity",
+                "Service"
+            ]
+        },
+        {
+            "id": "client-003",
+            "question": "Activity 的生命周期有哪些？",
+            "answer": "Activity 常见生命周期方法：\n\n1. onCreate：Activity 创建，初始化布局和数据。\n2. onStart：Activity 对用户可见。\n3. onResume：Activity 位于前台，可以交互。\n4. onPause：Activity 失去焦点，部分可见或即将不可见。\n5. onStop：Activity 不可见。\n6. onRestart：从停止状态重新回到前台前调用。\n7. onDestroy：Activity 销毁。\n\n典型场景：\n1. 打开页面：onCreate -> onStart -> onResume。\n2. 按 Home：onPause -> onStop。\n3. 从后台回来：onRestart -> onStart -> onResume。\n4. 返回退出：onPause -> onStop -> onDestroy。\n\n面试重点：onPause 要轻量，不能做耗时操作；资源注册和释放要和生命周期匹配。",
+            "difficulty": "easy",
+            "tags": [
+                "Android",
+                "Activity",
+                "生命周期"
+            ]
+        },
+        {
+            "id": "client-004",
+            "question": "Activity 横竖屏切换时生命周期如何变化？如何保存数据？",
+            "answer": "默认情况下，横竖屏切换属于配置变更，Activity 会销毁并重新创建。\n\n典型流程：\n1. 当前 Activity 调用 onPause。\n2. 调用 onStop。\n3. 调用 onDestroy。\n4. 新 Activity 调用 onCreate。\n5. 调用 onStart。\n6. 调用 onResume。\n\n保存数据方式：\n1. onSaveInstanceState：保存少量临时 UI 状态。\n2. ViewModel：保存页面相关数据，配置变更后仍可保留。\n3. 持久化存储：SharedPreferences、数据库、文件等。\n4. 禁止重建：通过 configChanges 处理配置变化，但不推荐滥用。\n\n注意：\nonSaveInstanceState 适合保存轻量状态，不适合保存大量数据或复杂对象。\n\n面试重点：横竖屏切换默认会重建 Activity，推荐用 ViewModel 保存页面数据。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "Activity",
+                "横竖屏",
+                "ViewModel"
+            ]
+        },
+        {
+            "id": "client-005",
+            "question": "Fragment 生命周期和 Activity 生命周期有什么关系？",
+            "answer": "Fragment 依附于 Activity，它有自己的生命周期，同时受 Activity 生命周期影响。\n\nFragment 常见生命周期：\n1. onAttach：Fragment 关联到 Activity。\n2. onCreate：Fragment 创建。\n3. onCreateView：创建 Fragment 的 View。\n4. onViewCreated：View 创建完成。\n5. onStart：Fragment 可见。\n6. onResume：Fragment 可交互。\n7. onPause：失去焦点。\n8. onStop：不可见。\n9. onDestroyView：销毁 View。\n10. onDestroy：销毁 Fragment。\n11. onDetach：和 Activity 解绑。\n\n重点区别：\n1. Fragment 生命周期比 Activity 更细。\n2. Fragment 的 View 生命周期和 Fragment 本身生命周期不同。\n3. onDestroyView 后，Fragment 对象可能还在，但 View 已经销毁。\n\n面试重点：Fragment 中要注意 ViewBinding、LiveData 观察者和引用释放，避免在 onDestroyView 后继续持有 View。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "Fragment",
+                "生命周期"
+            ]
+        },
+        {
+            "id": "client-006",
+            "question": "Android 中 Handler、Looper、MessageQueue 的关系是什么？",
+            "answer": "Handler、Looper、MessageQueue 是 Android 消息机制的核心。\n\n关系：\n1. MessageQueue 是消息队列，用来存放 Message 或 Runnable。\n2. Looper 负责不断从 MessageQueue 中取消息。\n3. Handler 负责发送消息和处理消息。\n4. 一个线程最多对应一个 Looper。\n5. 一个 Looper 对应一个 MessageQueue。\n6. 一个线程可以有多个 Handler，它们共享同一个 Looper 和 MessageQueue。\n\n工作流程：\n1. Handler 发送 Message 到 MessageQueue。\n2. Looper.loop 不断取出消息。\n3. Looper 把消息分发给对应 Handler。\n4. Handler.handleMessage 或 Runnable 执行。\n\n主线程为什么可以用 Handler：\nAndroid 应用启动时，系统已经为主线程创建了 Looper。\n\n面试重点：Handler 发消息，MessageQueue 存消息，Looper 取消息并分发。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "Handler",
+                "Looper",
+                "MessageQueue"
+            ]
+        },
+        {
+            "id": "client-007",
+            "question": "Handler 为什么可能导致内存泄漏？如何避免？",
+            "answer": "Handler 可能导致内存泄漏，常见原因是非静态内部类 Handler 会隐式持有外部 Activity 引用。\n\n泄漏场景：\n1. Activity 创建了一个非静态内部 Handler。\n2. Handler 发送了延迟消息。\n3. Activity 已经 finish。\n4. MessageQueue 中的消息还没处理完。\n5. Message 持有 Handler，Handler 持有 Activity，导致 Activity 无法被回收。\n\n解决方式：\n1. 使用静态内部类 Handler。\n2. 用 WeakReference 弱引用 Activity。\n3. 在 onDestroy 中调用 removeCallbacksAndMessages(null)。\n4. 避免长时间延迟消息持有页面对象。\n5. 使用 lifecycle-aware 组件替代部分 Handler 场景。\n\n面试重点：Handler 泄漏的本质是 MessageQueue 中未处理消息间接持有 Activity。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "Handler",
+                "内存泄漏",
+                "WeakReference"
+            ]
+        },
+        {
+            "id": "client-008",
+            "question": "Android 中为什么不能在子线程更新 UI？",
+            "answer": "Android UI 不是线程安全的，只能在主线程更新 UI。\n\n原因：\n1. View 树的绘制、测量、布局都在主线程进行。\n2. 如果多个线程同时修改 View 状态，会产生竞态条件。\n3. 给 View 加锁会增加复杂度和性能开销。\n4. Android 选择单线程 UI 模型，让 UI 更新有序执行。\n\n如果子线程需要更新 UI，可以：\n1. 使用 Handler 切回主线程。\n2. 使用 runOnUiThread。\n3. 使用 View.post。\n4. 使用 LiveData、Flow、Coroutine Main Dispatcher 等。\n\n例子：\n网络请求在子线程执行，拿到结果后切回主线程刷新列表。\n\n面试重点：UI 单线程模型是为了避免并发修改 View 树带来的复杂性。",
+            "difficulty": "easy",
+            "tags": [
+                "Android",
+                "UI线程",
+                "主线程",
+                "线程安全"
+            ]
+        },
+        {
+            "id": "client-009",
+            "question": "View 的绘制流程是什么？",
+            "answer": "Android View 的绘制流程主要包括三步：measure、layout、draw。\n\n1. measure：测量阶段。\n确定 View 的宽高。父 View 会根据自己的规则和子 View 的 LayoutParams 生成 MeasureSpec。\n\n2. layout：布局阶段。\n确定 View 在父容器中的位置，也就是 left、top、right、bottom。\n\n3. draw：绘制阶段。\n把 View 真正绘制到屏幕上，包括背景、内容、子 View、前景等。\n\n大致调用：\n1. ViewRootImpl 发起遍历。\n2. performMeasure。\n3. performLayout。\n4. performDraw。\n\n常见优化：\n1. 减少布局层级。\n2. 避免频繁 requestLayout。\n3. 自定义 View 中避免 onDraw 分配对象。\n4. 避免过度绘制。\n\n面试重点：measure 定大小，layout 定位置，draw 负责画出来。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "View绘制",
+                "measure",
+                "layout",
+                "draw"
+            ]
+        },
+        {
+            "id": "client-010",
+            "question": "View 的事件分发机制是什么？",
+            "answer": "Android 触摸事件分发主要涉及三个方法：\n\n1. dispatchTouchEvent：分发事件。\n2. onInterceptTouchEvent：是否拦截事件，只有 ViewGroup 有。\n3. onTouchEvent：处理事件。\n\n事件从 Activity 开始，经过 Window、DecorView，再到具体 ViewGroup 和 View。\n\n流程理解：\n1. dispatchTouchEvent 决定事件往哪里传。\n2. ViewGroup 可以通过 onInterceptTouchEvent 决定是否拦截。\n3. 如果不拦截，事件传给子 View。\n4. 如果子 View 不处理，事件会向父容器回传。\n\n常见事件序列：\n1. ACTION_DOWN。\n2. ACTION_MOVE。\n3. ACTION_UP 或 ACTION_CANCEL。\n\n注意：\n如果某个 View 不消费 ACTION_DOWN，后续 MOVE、UP 通常不会再给它。\n\n面试重点：事件分发是从上往下分发，从下往上处理。",
+            "difficulty": "hard",
+            "tags": [
+                "Android",
+                "事件分发",
+                "ViewGroup",
+                "TouchEvent"
+            ]
+        },
+        {
+            "id": "client-011",
+            "question": "RecyclerView 为什么比 ListView 更强？",
+            "answer": "RecyclerView 是 ListView 的升级版，提供了更强的灵活性和性能扩展能力。\n\n优势：\n1. ViewHolder 模式强制化，减少 findViewById 开销。\n2. 支持 LayoutManager，可以实现线性、网格、瀑布流等布局。\n3. 支持 ItemDecoration，方便添加分割线和装饰。\n4. 支持 ItemAnimator，方便实现增删改动画。\n5. 支持更灵活的局部刷新。\n6. 回收复用机制更强。\n7. 更适合复杂列表和信息流场景。\n\n常见优化：\n1. 使用 DiffUtil。\n2. 局部刷新 payload。\n3. 合理设置缓存。\n4. 避免在 onBindViewHolder 中做耗时操作。\n5. 图片加载要取消错位和复用问题。\n\n面试重点：RecyclerView 的核心优势是布局解耦、复用机制和扩展性。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "RecyclerView",
+                "ListView",
+                "列表优化"
+            ]
+        },
+        {
+            "id": "client-012",
+            "question": "RecyclerView 如何避免卡顿？",
+            "answer": "RecyclerView 卡顿常见原因是主线程工作过重、布局复杂、图片加载不合理或刷新粒度太大。\n\n优化方式：\n1. 降低 item 布局层级，减少 measure/layout 成本。\n2. onBindViewHolder 中不要做耗时操作。\n3. 使用 DiffUtil 计算差异，避免 notifyDataSetChanged 全量刷新。\n4. 使用 payload 做局部刷新。\n5. 图片加载使用成熟库，并设置合适尺寸和占位图。\n6. 提前计算复杂数据，避免绑定时计算。\n7. 合理使用 RecycledViewPool。\n8. 对嵌套 RecyclerView 做缓存和预加载优化。\n9. 避免频繁创建对象，减少 GC。\n\n面试重点：列表性能优化核心是减少主线程耗时、减少全量刷新、减少复杂布局和图片开销。",
+            "difficulty": "hard",
+            "tags": [
+                "Android",
+                "RecyclerView",
+                "卡顿优化",
+                "DiffUtil"
+            ]
+        },
+        {
+            "id": "client-013",
+            "question": "Android ANR 是什么？常见原因有哪些？",
+            "answer": "ANR 是 Application Not Responding，表示应用无响应。\n\n常见触发场景：\n1. 主线程 5 秒内没有响应输入事件。\n2. BroadcastReceiver 在规定时间内没有执行完成。\n3. Service 在规定时间内没有启动或执行完成。\n4. ContentProvider 发布超时。\n\n常见原因：\n1. 主线程执行耗时任务。\n2. 主线程等待锁。\n3. 主线程等待网络或数据库。\n4. 死锁。\n5. Binder 调用阻塞。\n6. CPU 被其他线程占满。\n7. I/O 卡顿。\n\n排查方式：\n1. 查看 ANR traces 文件。\n2. 查看主线程堆栈。\n3. 查看 CPU、I/O、锁等待。\n4. 结合日志定位发生时间点。\n\n面试重点：ANR 的本质是主线程长时间无法处理消息。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "ANR",
+                "主线程",
+                "性能稳定性"
+            ]
+        },
+        {
+            "id": "client-014",
+            "question": "如何排查和治理 Android 卡顿？",
+            "answer": "Android 卡顿通常是因为一帧内主线程工作超过 16.6ms，导致掉帧。\n\n排查方向：\n1. 使用 Systrace、Perfetto 分析主线程耗时。\n2. 使用 Choreographer 监听帧耗时。\n3. 查看是否有主线程 I/O、网络、数据库、锁等待。\n4. 分析布局是否过深、过度绘制是否严重。\n5. 查看 GC 是否频繁。\n6. 查看列表滑动时 onBind 是否耗时。\n\n治理方式：\n1. 耗时任务放到子线程。\n2. 优化布局层级。\n3. 减少过度绘制。\n4. 避免主线程锁等待。\n5. 减少对象频繁创建。\n6. 图片按需加载和压缩。\n7. 列表使用局部刷新和预加载。\n8. 大任务拆分到多帧执行。\n\n面试重点：卡顿治理要围绕主线程一帧时间预算展开。",
+            "difficulty": "hard",
+            "tags": [
+                "Android",
+                "卡顿优化",
+                "掉帧",
+                "Perfetto",
+                "Systrace"
+            ]
+        },
+        {
+            "id": "client-015",
+            "question": "Android 启动优化怎么做？",
+            "answer": "Android 启动优化主要目标是减少从点击图标到首屏可见、可交互的时间。\n\n常见优化方向：\n1. Application onCreate 中避免做重任务。\n2. 初始化任务分级：必要初始化同步做，非必要初始化延迟或异步做。\n3. 使用启动任务编排，控制依赖关系和线程池。\n4. 减少主线程 I/O、数据库、网络请求。\n5. 优化首屏布局，减少层级和复杂 View。\n6. 减少冷启动期间类加载和反射。\n7. 使用懒加载和按需初始化。\n8. 优化 MultiDex、资源加载、图片加载。\n9. 使用启动页占位优化用户感知。\n\n指标：\n1. 冷启动时间。\n2. 温启动时间。\n3. 首帧时间。\n4. 首屏可交互时间。\n\n面试重点：启动优化不是把所有任务都异步，而是区分首屏必要和非必要任务。",
+            "difficulty": "hard",
+            "tags": [
+                "Android",
+                "启动优化",
+                "冷启动",
+                "首屏"
+            ]
+        },
+        {
+            "id": "client-016",
+            "question": "Android 内存泄漏常见场景有哪些？",
+            "answer": "常见内存泄漏场景：\n\n1. 静态变量持有 Activity 或 View。\n2. 非静态内部类 Handler 持有 Activity。\n3. 匿名内部类或 Runnable 长时间持有外部类引用。\n4. 注册监听器、广播、Observer 后没有反注册。\n5. 单例持有 Context 时传入了 Activity Context。\n6. WebView 没有正确销毁。\n7. 线程或线程池任务持有页面对象。\n8. Dialog、PopupWindow 持有 Activity。\n9. 集合缓存无限增长。\n10. Bitmap 或大对象没有及时释放引用。\n\n排查工具：\n1. LeakCanary。\n2. Android Studio Profiler。\n3. MAT 分析 heap dump。\n\n面试重点：内存泄漏的本质是对象已经不需要了，但仍被 GC Roots 间接引用。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "内存泄漏",
+                "LeakCanary",
+                "GC Roots"
+            ]
+        },
+        {
+            "id": "client-017",
+            "question": "Android OOM 常见原因和优化方式有哪些？",
+            "answer": "OOM 是内存不足导致的崩溃。\n\n常见原因：\n1. 加载大图没有压缩。\n2. Bitmap 使用过多。\n3. 内存泄漏导致 Activity 无法释放。\n4. 列表中缓存过多对象。\n5. 大数组、大 JSON、大文件一次性读入内存。\n6. WebView、播放器等组件占用大。\n7. 低端机内存限制较小。\n\n优化方式：\n1. 图片按目标尺寸采样压缩。\n2. 使用图片缓存，控制内存缓存大小。\n3. 及时释放无用引用。\n4. 避免 Activity 泄漏。\n5. 大文件流式处理。\n6. 列表分页加载。\n7. 使用 LruCache 管理缓存。\n8. 用 Profiler 和 heap dump 定位大对象。\n\n面试重点：客户端 OOM 高频原因是图片、大对象和内存泄漏。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "OOM",
+                "Bitmap",
+                "内存优化"
+            ]
+        },
+        {
+            "id": "client-018",
+            "question": "Bitmap 加载大图如何优化？",
+            "answer": "Bitmap 大图优化核心是按需加载，避免把超大原图完整加载进内存。\n\n常见优化：\n1. 使用 inJustDecodeBounds 先读取图片宽高，不真正加载像素。\n2. 根据目标 View 大小计算 inSampleSize。\n3. 按采样比例加载缩略图。\n4. 选择合适 Bitmap.Config，例如 RGB_565 比 ARGB_8888 更省内存，但没有透明通道且色彩质量较低。\n5. 使用图片加载库，例如 Glide、Coil、Fresco。\n6. 做内存缓存和磁盘缓存。\n7. 列表滑动时暂停或取消无效请求。\n8. 避免在主线程解码大图。\n\n内存计算：\nBitmap 内存约等于 宽 × 高 × 每像素字节数。\nARGB_8888 每像素 4 字节。\n\n面试重点：大图优化不是加载后再缩放，而是解码时就按目标尺寸采样。",
+            "difficulty": "hard",
+            "tags": [
+                "Android",
+                "Bitmap",
+                "图片优化",
+                "内存优化"
+            ]
+        },
+        {
+            "id": "client-019",
+            "question": "Android 包体积优化有哪些方法？",
+            "answer": "包体积优化常见方向：\n\n1. 开启代码混淆和压缩，例如 R8/ProGuard。\n2. 删除无用代码和无用资源。\n3. 使用 resource shrinking。\n4. 图片压缩，使用 WebP 等更小格式。\n5. 多分辨率资源精简，避免重复大图。\n6. so 库按 ABI 拆分，只下发需要的架构。\n7. 使用 App Bundle，让应用商店按设备分发资源。\n8. 动态特性模块，非核心功能按需下载。\n9. 减少重复依赖和无用三方库。\n10. 字体、模型、音视频资源按需下发或云端化。\n\n注意：\n包体优化要结合启动速度、运行性能和业务需求，不能为了小包体牺牲核心体验。\n\n面试重点：包体优化主要从代码、资源、so、依赖、动态下发几个方向入手。",
+            "difficulty": "medium",
+            "tags": [
+                "Android",
+                "包体优化",
+                "R8",
+                "资源压缩"
+            ]
+        },
+        {
+            "id": "client-020",
+            "question": "Android 耗电优化怎么做？",
+            "answer": "耗电优化要减少 CPU、网络、定位、传感器、唤醒锁等资源消耗。\n\n常见优化：\n1. 减少后台任务频率。\n2. 合并网络请求，减少频繁唤醒无线模块。\n3. 合理使用 JobScheduler、WorkManager。\n4. 定位按需开启，降低定位精度和频率。\n5. 避免长期持有 WakeLock。\n6. 降低动画和刷新频率。\n7. 避免后台频繁轮询。\n8. 使用推送替代客户端主动轮询。\n9. 监控 CPU 占用和线程异常。\n10. 音视频场景降低不必要解码、渲染和采集开销。\n\n排查工具：\n1. Battery Historian。\n2. Android Profiler。\n3. 系统电量统计。\n\n面试重点：耗电优化核心是减少后台唤醒、网络频率、定位频率和 CPU 长时间占用。",
+            "difficulty": "hard",
+            "tags": [
+                "Android",
+                "耗电优化",
+                "WakeLock",
+                "WorkManager"
+            ]
+        },
+        {
+            "id": "client-021",
+            "question": "客户端网络请求一般如何封装？",
+            "answer": "客户端网络层通常会做统一封装，避免业务代码直接操作底层请求。\n\n常见分层：\n1. API 接口层：定义接口方法。\n2. Request 构造层：组装 URL、Header、参数、Body。\n3. Network Client：执行请求，例如 OkHttp。\n4. Converter：JSON 和对象转换。\n5. Interceptor：统一处理 Header、签名、日志、重试、缓存。\n6. Repository：对业务层提供数据接口。\n7. Error Handler：统一错误码和异常处理。\n\n常见能力：\n1. 超时配置。\n2. 失败重试。\n3. Token 自动刷新。\n4. 请求取消。\n5. 弱网处理。\n6. 缓存策略。\n7. 日志和链路追踪。\n8. 统一降级。\n\n面试重点：好的网络层封装要做到统一、可观测、可取消、可重试、可扩展。",
+            "difficulty": "medium",
+            "tags": [
+                "客户端网络",
+                "OkHttp",
+                "Retrofit",
+                "架构"
+            ]
+        },
+        {
+            "id": "client-022",
+            "question": "OkHttp 的拦截器有什么作用？应用拦截器和网络拦截器有什么区别？",
+            "answer": "OkHttp 拦截器用于统一处理请求和响应。\n\n常见用途：\n1. 添加公共 Header。\n2. 添加 Token。\n3. 打印请求和响应日志。\n4. 统一签名。\n5. 失败重试。\n6. 缓存控制。\n7. 统计请求耗时。\n8. 统一错误处理。\n\n应用拦截器：\n1. 更靠近应用层。\n2. 只调用一次。\n3. 不关心重定向、重试等中间过程。\n4. 适合加公共参数、日志、业务错误处理。\n\n网络拦截器：\n1. 更靠近网络层。\n2. 可能因为重定向、重试调用多次。\n3. 可以观察真实网络请求。\n4. 能访问网络连接相关信息。\n\n面试重点：应用拦截器偏业务统一处理，网络拦截器偏底层网络过程观察。",
+            "difficulty": "medium",
+            "tags": [
+                "OkHttp",
+                "拦截器",
+                "网络请求"
+            ]
+        },
+        {
+            "id": "client-023",
+            "question": "客户端如何处理 Token 过期？",
+            "answer": "Token 过期通常需要统一处理，避免每个接口单独写逻辑。\n\n常见方案：\n1. 请求时携带 access token。\n2. 服务端返回 401 或特定业务错误码表示 token 过期。\n3. 客户端使用 refresh token 请求新 access token。\n4. 刷新成功后，重试原请求。\n5. 刷新失败则跳转登录。\n\n并发问题：\n如果多个请求同时发现 token 过期，不能同时刷新 token，否则会产生并发刷新问题。\n\n解决方式：\n1. 使用锁或队列，只允许一个刷新请求执行。\n2. 其他请求等待刷新结果。\n3. 刷新成功后统一重试。\n4. 刷新失败后统一登出。\n\n注意：\n1. Token 存储要安全。\n2. 避免无限重试。\n3. refresh token 也可能过期。\n\n面试重点：Token 刷新难点是并发刷新和失败后的统一处理。",
+            "difficulty": "hard",
+            "tags": [
+                "Token",
+                "登录态",
+                "网络请求",
+                "并发控制"
+            ]
+        },
+        {
+            "id": "client-024",
+            "question": "客户端弱网优化怎么做？",
+            "answer": "弱网优化要从请求策略、数据压缩、缓存、超时、重试和用户体验多方面处理。\n\n常见措施：\n1. 设置合理连接超时、读写超时。\n2. 请求失败时有限重试，避免无限重试。\n3. 使用指数退避。\n4. 合并请求，减少请求次数。\n5. 压缩请求和响应数据。\n6. 图片按网络状态加载不同清晰度。\n7. 使用本地缓存，弱网时先展示缓存。\n8. 支持断点续传。\n9. 上传任务支持暂停和恢复。\n10. 重要请求做状态补偿。\n11. UI 上给出加载、重试、离线提示。\n\n直播/音视频弱网：\n1. 自适应码率。\n2. 增大缓冲。\n3. 降低分辨率。\n4. 丢帧保音频。\n5. 网络质量探测。\n\n面试重点：弱网优化不是只调超时，而是网络策略、缓存和体验兜底的综合设计。",
+            "difficulty": "hard",
+            "tags": [
+                "弱网优化",
+                "网络请求",
+                "缓存",
+                "重试"
+            ]
+        },
+        {
+            "id": "client-025",
+            "question": "客户端缓存一般怎么设计？",
+            "answer": "客户端缓存通常分为内存缓存、磁盘缓存和数据库缓存。\n\n常见缓存：\n1. 内存缓存：速度快，适合短期热点数据，例如图片内存缓存。\n2. 磁盘缓存：适合图片、接口响应、文件等。\n3. 数据库缓存：适合结构化数据，例如 Room、SQLite。\n4. SharedPreferences/DataStore：适合少量配置数据。\n\n缓存策略：\n1. Cache First：优先读缓存，适合弱网和离线。\n2. Network First：优先请求网络，失败后读缓存。\n3. Stale While Revalidate：先展示旧缓存，同时后台刷新。\n4. 按 TTL 过期。\n5. LRU 淘汰。\n\n注意：\n1. 缓存要考虑一致性。\n2. 敏感数据要加密或避免缓存。\n3. 缓存不可无限增长。\n4. 用户退出登录时要清理相关缓存。\n\n面试重点：客户端缓存设计要平衡速度、离线能力、一致性和存储空间。",
+            "difficulty": "medium",
+            "tags": [
+                "客户端缓存",
+                "内存缓存",
+                "磁盘缓存",
+                "LRU"
+            ]
+        },
+        {
+            "id": "client-026",
+            "question": "客户端架构 MVC、MVP、MVVM 有什么区别？",
+            "answer": "三者都是客户端常见架构模式。\n\nMVC：\n1. Model 负责数据。\n2. View 负责界面。\n3. Controller 负责控制逻辑。\n4. 在 Android 中 Activity 很容易同时承担 View 和 Controller，导致臃肿。\n\nMVP：\n1. View 只负责显示和用户事件。\n2. Presenter 负责业务逻辑和调度。\n3. Model 负责数据。\n4. View 和 Presenter 通常通过接口通信。\n5. 可测试性比 MVC 更好，但接口和模板代码较多。\n\nMVVM：\n1. View 负责界面展示。\n2. ViewModel 保存 UI 状态和处理 UI 逻辑。\n3. Model/Repository 负责数据。\n4. 通过 LiveData、Flow、DataBinding 等实现数据驱动 UI。\n5. 更适合现代 Android 架构。\n\n面试重点：MVVM 的核心是 ViewModel 管理 UI 状态，View 观察状态变化并渲染。",
+            "difficulty": "medium",
+            "tags": [
+                "客户端架构",
+                "MVC",
+                "MVP",
+                "MVVM"
+            ]
+        },
+        {
+            "id": "client-027",
+            "question": "MVVM 中 ViewModel 的作用是什么？",
+            "answer": "ViewModel 是 MVVM 架构中连接 View 和数据层的重要组件。\n\n作用：\n1. 保存页面 UI 状态。\n2. 处理页面相关逻辑。\n3. 调用 Repository 获取数据。\n4. 暴露 LiveData、StateFlow 等可观察数据给 View。\n5. 在配置变更时保留数据，例如横竖屏切换。\n6. 减少 Activity/Fragment 中的业务逻辑。\n\nViewModel 不应该：\n1. 持有 Activity、Fragment、View 的强引用。\n2. 直接操作具体 UI 控件。\n3. 做大量和 UI 生命周期强绑定的事情。\n\n推荐分层：\nView -> ViewModel -> Repository -> Local/Remote DataSource。\n\n面试重点：ViewModel 管 UI 状态，不直接持有 View。",
+            "difficulty": "medium",
+            "tags": [
+                "MVVM",
+                "ViewModel",
+                "Android架构"
+            ]
+        },
+        {
+            "id": "client-028",
+            "question": "客户端为什么需要模块化？",
+            "answer": "模块化是把大型客户端项目拆分成多个相对独立的模块。\n\n好处：\n1. 降低代码耦合。\n2. 提高编译速度。\n3. 支持多人并行开发。\n4. 方便业务独立迭代。\n5. 支持按需加载和动态化。\n6. 便于复用基础能力。\n7. 降低单个模块复杂度。\n\n常见拆分方式：\n1. 基础库模块，例如 network、image、log、storage。\n2. 业务模块，例如 home、message、profile、live。\n3. 公共 UI 组件模块。\n4. 路由模块。\n5. 数据层模块。\n\n挑战：\n1. 模块间依赖管理。\n2. 组件通信。\n3. 路由设计。\n4. 资源命名冲突。\n5. 构建配置复杂度上升。\n\n面试重点：模块化的核心是解耦、提效和支撑大型项目协作。",
+            "difficulty": "medium",
+            "tags": [
+                "模块化",
+                "客户端架构",
+                "组件化"
+            ]
+        },
+        {
+            "id": "client-029",
+            "question": "客户端组件化和模块化有什么区别？",
+            "answer": "模块化和组件化经常一起出现，但侧重点不同。\n\n模块化：\n1. 更关注代码结构拆分。\n2. 把项目拆成多个 module。\n3. 目标是降低耦合、提升编译和维护效率。\n\n组件化：\n1. 更关注业务模块独立运行和独立集成。\n2. 每个业务组件可以单独开发、调试、测试。\n3. 组件之间通过路由、接口、事件等方式通信。\n4. 目标是大型业务并行开发和动态组合。\n\n简单理解：\n模块化是物理拆分，组件化是业务独立化和可插拔化。\n\n组件化常见能力：\n1. 路由框架。\n2. 依赖倒置。\n3. 组件生命周期管理。\n4. 独立调试壳工程。\n5. 统一通信协议。\n\n面试重点：组件化比模块化更强调业务组件独立运行和解耦通信。",
+            "difficulty": "medium",
+            "tags": [
+                "组件化",
+                "模块化",
+                "客户端架构"
+            ]
+        },
+        {
+            "id": "client-030",
+            "question": "客户端路由框架解决什么问题？",
+            "answer": "客户端路由框架用于解决页面跳转和组件间解耦调用问题。\n\n没有路由框架的问题：\n1. 页面跳转直接依赖目标 Activity 或 Fragment。\n2. 业务模块之间强耦合。\n3. 组件化后模块之间不能直接互相依赖。\n4. 外部链接、Push、H5 跳转原生页面难以统一处理。\n\n路由框架能力：\n1. 通过 URL 或 path 跳转页面。\n2. 支持参数传递。\n3. 支持拦截器，例如登录校验。\n4. 支持降级处理。\n5. 支持 H5、Push、扫码等统一跳转。\n6. 支持跨模块解耦。\n\n例子：\n`app://live/room?id=123` 可以跳转到直播间页面。\n\n面试重点：路由框架是组件化中的关键基础设施，用 URL 化方式解耦页面跳转。",
+            "difficulty": "medium",
+            "tags": [
+                "客户端路由",
+                "组件化",
+                "页面跳转"
+            ]
+        },
+        {
+            "id": "client-031",
+            "question": "Native、H5、小程序、Flutter、React Native 有什么区别？",
+            "answer": "几种客户端技术方案区别：\n\n1. Native：\n使用 Android/iOS 原生技术开发。性能最好，系统能力最完整，但双端开发成本高。\n\n2. H5：\n运行在 WebView 中。动态性强，发版快，但性能和系统能力受限。\n\n3. 小程序：\n运行在宿主 App 提供的容器中。开发和分发方便，但受平台规范限制。\n\n4. React Native：\n使用 JS 写逻辑，通过桥接调用原生组件。动态性和跨端能力较好，但桥通信和复杂场景性能要关注。\n\n5. Flutter：\n使用 Dart，自绘 UI，跨端一致性好，性能较强，但包体和生态接入成本要考虑。\n\n选择：\n1. 极致性能和复杂系统能力：Native。\n2. 活动页和快速迭代：H5。\n3. 跨端统一体验：Flutter。\n4. 现有前端生态复用：React Native。\n\n面试重点：技术选型要在性能、动态性、开发成本、生态和体验一致性之间权衡。",
+            "difficulty": "medium",
+            "tags": [
+                "跨端",
+                "Native",
+                "H5",
+                "Flutter",
+                "React Native"
+            ]
+        },
+        {
+            "id": "client-032",
+            "question": "WebView 常见性能和稳定性问题有哪些？",
+            "answer": "WebView 常见问题：\n\n性能问题：\n1. 首次创建 WebView 慢。\n2. H5 资源加载慢。\n3. JS 执行阻塞页面。\n4. 图片和长列表导致内存高。\n5. Native 和 JS 通信频繁导致性能下降。\n\n稳定性问题：\n1. WebView 内存泄漏。\n2. 某些系统版本兼容性问题。\n3. 白屏。\n4. 页面崩溃。\n5. 资源加载失败。\n\n优化方式：\n1. WebView 预创建和复用。\n2. 离线包和资源预加载。\n3. DNS 预解析。\n4. JSBridge 调用合并。\n5. 图片懒加载。\n6. 销毁时正确移除 View、停止加载、清理引用。\n7. 监控白屏率和加载耗时。\n\n面试重点：WebView 优化重点是预加载、离线包、通信优化和内存释放。",
+            "difficulty": "hard",
+            "tags": [
+                "WebView",
+                "H5",
+                "性能优化",
+                "稳定性"
+            ]
+        },
+        {
+            "id": "client-033",
+            "question": "JSBridge 是什么？Native 和 H5 如何通信？",
+            "answer": "JSBridge 是 Native 和 H5 之间的通信桥梁。\n\n常见通信方向：\n1. H5 调 Native：调用相机、定位、登录、分享、支付等原生能力。\n2. Native 调 H5：通知页面状态变化、回传结果、执行 JS 方法。\n\n常见实现方式：\n1. URL Scheme 拦截。\n2. WebView addJavascriptInterface。\n3. iOS WKScriptMessageHandler。\n4. evaluateJavascript 执行 JS。\n5. Promise/Callback 机制管理异步结果。\n\n注意事项：\n1. 安全校验，防止任意网页调用敏感 Native 能力。\n2. 参数序列化和协议版本兼容。\n3. 回调管理，防止内存泄漏。\n4. 减少频繁通信。\n5. 统一错误码。\n\n面试重点：JSBridge 本质是 H5 和 Native 之间的一套通信协议和调用框架。",
+            "difficulty": "hard",
+            "tags": [
+                "JSBridge",
+                "WebView",
+                "H5",
+                "Native通信"
+            ]
+        },
+        {
+            "id": "client-034",
+            "question": "客户端热修复是什么？有什么风险？",
+            "answer": "热修复是指不重新发布完整 App，通过下发补丁修复线上问题。\n\n常见方案：\n1. 代码热修复。\n2. 资源热修复。\n3. so 库热修复。\n4. 配置开关降级。\n\n优点：\n1. 快速修复线上 bug。\n2. 避免等待应用商店审核。\n3. 降低故障影响范围。\n\n风险：\n1. 兼容性问题，不同机型和系统表现可能不同。\n2. 补丁安全风险。\n3. 修复范围有限。\n4. 可能影响启动和加载性能。\n5. 容易绕过正常发版测试流程。\n6. 部分平台对动态代码下发有限制。\n\n工程建议：\n1. 热修复只作为应急手段。\n2. 必须有灰度、回滚、签名校验和监控。\n3. 能用配置降级解决的问题，优先用配置。\n\n面试重点：热修复不是常规发布替代品，而是线上应急能力。",
+            "difficulty": "hard",
+            "tags": [
+                "热修复",
+                "动态化",
+                "客户端稳定性"
+            ]
+        },
+        {
+            "id": "client-035",
+            "question": "客户端埋点系统如何设计？",
+            "answer": "客户端埋点用于采集用户行为和性能数据。\n\n常见埋点类型：\n1. 点击埋点。\n2. 曝光埋点。\n3. 页面访问埋点。\n4. 性能埋点。\n5. 错误和崩溃埋点。\n6. 业务转化漏斗埋点。\n\n设计要点：\n1. 统一事件模型，例如 eventName、timestamp、userId、deviceId、page、params。\n2. 支持批量上报，减少网络请求。\n3. 支持本地缓存，弱网或失败时重试。\n4. 支持采样，避免数据量过大。\n5. 保证关键事件可靠性。\n6. 支持埋点校验和自动化测试。\n7. 注意隐私合规，不采集敏感信息。\n\n常见问题：\n1. 重复上报。\n2. 漏报。\n3. 曝光时机不准。\n4. 页面路径混乱。\n5. 参数不一致。\n\n面试重点：埋点系统要关注准确性、可靠性、性能开销和隐私合规。",
+            "difficulty": "hard",
+            "tags": [
+                "埋点",
+                "数据采集",
+                "客户端监控"
+            ]
+        },
+        {
+            "id": "client-036",
+            "question": "客户端崩溃率如何治理？",
+            "answer": "崩溃率治理需要从采集、归因、修复、预防四个阶段进行。\n\n治理流程：\n1. 接入崩溃采集 SDK。\n2. 收集堆栈、机型、系统版本、App 版本、用户路径、线程信息。\n3. 对崩溃进行聚合和归类。\n4. 按影响用户数、发生频率、版本分布排序。\n5. 复现和定位根因。\n6. 修复后灰度发布。\n7. 观察崩溃率是否下降。\n8. 对高风险代码增加防御和测试。\n\n常见崩溃类型：\n1. 空指针。\n2. 数组越界。\n3. 类型转换错误。\n4. 生命周期状态异常。\n5. 并发问题。\n6. Native crash。\n7. 系统兼容性问题。\n\n面试重点：崩溃治理不是只修单个 bug，而是建立监控、分级、灰度、回归和预防机制。",
+            "difficulty": "hard",
+            "tags": [
+                "崩溃治理",
+                "Crash",
+                "稳定性",
+                "线上监控"
+            ]
+        },
+        {
+            "id": "client-037",
+            "question": "客户端如何做灰度发布和降级？",
+            "answer": "灰度发布和降级是客户端稳定性的重要手段。\n\n灰度发布：\n1. 新版本先给少量用户。\n2. 观察崩溃率、ANR、核心业务指标。\n3. 稳定后逐步扩大范围。\n4. 发现问题及时停止或回滚。\n\n灰度维度：\n1. App 版本。\n2. 用户 ID。\n3. 地域。\n4. 设备型号。\n5. 系统版本。\n6. 实验分组。\n\n降级方式：\n1. 配置开关关闭问题功能。\n2. H5 替换 Native 页面。\n3. 返回缓存数据。\n4. 关闭动画、特效、非核心模块。\n5. 直播场景降低清晰度或关闭部分互动能力。\n\n面试重点：客户端发版慢，所以必须依赖配置、灰度和降级能力控制线上风险。",
+            "difficulty": "hard",
+            "tags": [
+                "灰度发布",
+                "降级",
+                "客户端稳定性",
+                "配置中心"
+            ]
+        },
+        {
+            "id": "client-038",
+            "question": "直播推流和拉流分别是什么？",
+            "answer": "直播链路中，推流和拉流是两个核心方向。\n\n推流：\n主播端把采集到的音视频数据编码后上传到服务器或 CDN。\n流程通常是：\n1. 采集摄像头和麦克风。\n2. 美颜、滤镜、降噪等处理。\n3. 编码，例如 H.264/H.265、AAC。\n4. 封装，例如 FLV。\n5. 通过协议推送，例如 RTMP、WebRTC、SRT。\n\n拉流：\n观众端从服务器或 CDN 拉取直播流并播放。\n流程通常是：\n1. 建立连接。\n2. 拉取音视频数据。\n3. 解封装。\n4. 解码。\n5. 音视频同步。\n6. 渲染画面和播放声音。\n\n面试重点：推流是主播上传，拉流是观众播放；两端关注点不同。",
+            "difficulty": "medium",
+            "tags": [
+                "直播",
+                "推流",
+                "拉流",
+                "音视频"
+            ]
+        },
+        {
+            "id": "client-039",
+            "question": "直播客户端的核心链路包括哪些环节？",
+            "answer": "直播客户端核心链路包括采集、处理、编码、传输、解码、渲染。\n\n主播端：\n1. 音频采集：麦克风。\n2. 视频采集：摄像头。\n3. 前处理：美颜、滤镜、降噪、回声消除。\n4. 编码：视频 H.264/H.265，音频 AAC/Opus。\n5. 封装：FLV、MP4、RTP 等。\n6. 推流：RTMP、WebRTC、SRT 等。\n\n观众端：\n1. 拉流。\n2. 解封装。\n3. 解码。\n4. 音视频同步。\n5. 渲染视频。\n6. 播放音频。\n7. 缓冲和弱网策略。\n\n关键指标：\n1. 首帧时间。\n2. 端到端延迟。\n3. 卡顿率。\n4. 音画同步。\n5. 清晰度。\n6. 功耗和发热。\n\n面试重点：直播不是单一播放器问题，而是完整音视频实时传输链路。",
+            "difficulty": "hard",
+            "tags": [
+                "直播",
+                "音视频",
+                "推流",
+                "播放器"
+            ]
+        },
+        {
+            "id": "client-040",
+            "question": "RTMP、HLS、WebRTC 有什么区别？",
+            "answer": "三者都是音视频传输相关方案，但适用场景不同。\n\nRTMP：\n1. 基于 TCP。\n2. 延迟通常比 HLS 低。\n3. 常用于直播推流。\n4. 传统直播链路中使用广泛。\n\nHLS：\n1. 基于 HTTP。\n2. 把直播切成多个 ts 或 fMP4 小片段。\n3. 兼容性好，CDN 友好。\n4. 延迟通常较高，适合观看端大规模分发。\n\nWebRTC：\n1. 面向实时音视频通信。\n2. 通常基于 UDP。\n3. 延迟很低，可以做到毫秒级到秒级。\n4. 适合连麦、会议、实时互动直播。\n5. 实现复杂，需要 NAT 穿透、拥塞控制、抖动缓冲等。\n\n面试重点：RTMP 常用于推流，HLS 适合大规模播放，WebRTC 适合低延迟互动。",
+            "difficulty": "medium",
+            "tags": [
+                "RTMP",
+                "HLS",
+                "WebRTC",
+                "直播协议"
+            ]
+        },
+        {
+            "id": "client-041",
+            "question": "直播卡顿的原因有哪些？如何优化？",
+            "answer": "直播卡顿可能发生在采集、编码、网络、服务器、解码、渲染多个环节。\n\n常见原因：\n1. 网络带宽不足或抖动。\n2. 丢包率高。\n3. CDN 节点质量差。\n4. 推流端编码码率过高。\n5. 观众端解码性能不足。\n6. 播放缓冲区过小。\n7. 主线程渲染卡顿。\n8. 设备发热降频。\n\n优化方式：\n1. 自适应码率，根据网络情况调整清晰度。\n2. 优化缓冲策略。\n3. 弱网下降低码率或分辨率。\n4. 使用就近 CDN 节点。\n5. 监控丢包、RTT、卡顿率、首帧时间。\n6. 硬件编解码优先。\n7. 渲染线程和业务线程隔离。\n8. 必要时丢帧保流畅。\n\n面试重点：直播卡顿要分段定位，不能只说网络问题。",
+            "difficulty": "hard",
+            "tags": [
+                "直播",
+                "卡顿优化",
+                "弱网",
+                "播放器"
+            ]
+        },
+        {
+            "id": "client-042",
+            "question": "直播延迟主要来自哪里？如何降低延迟？",
+            "answer": "直播延迟来自完整链路的多个阶段。\n\n延迟来源：\n1. 采集延迟。\n2. 编码延迟。\n3. 传输延迟。\n4. CDN 分发延迟。\n5. 播放器缓冲延迟。\n6. 解码和渲染延迟。\n\n降低延迟方式：\n1. 降低 GOP 长度。\n2. 减少播放器缓冲区。\n3. 使用低延迟协议，例如 WebRTC、低延迟 HLS、QUIC 方案等。\n4. 优化编码参数，减少 B 帧等高延迟结构。\n5. 就近接入和智能调度 CDN。\n6. 弱网下动态调整码率。\n7. 减少业务层排队和处理耗时。\n\n权衡：\n低延迟通常会牺牲抗抖动能力，可能增加卡顿率。\n\n面试重点：直播优化要在低延迟和低卡顿之间权衡。",
+            "difficulty": "hard",
+            "tags": [
+                "直播",
+                "低延迟",
+                "GOP",
+                "WebRTC"
+            ]
+        },
+        {
+            "id": "client-043",
+            "question": "什么是音画同步？如何实现？",
+            "answer": "音画同步是指视频画面和音频声音在播放时保持时间一致。\n\n为什么会不同步：\n1. 音频和视频采集时间不同。\n2. 编码、传输、解码耗时不同。\n3. 网络抖动导致到达时间不同。\n4. 播放器缓冲策略不同。\n\n实现思路：\n1. 每个音视频帧都有时间戳 PTS。\n2. 播放器根据时间戳决定播放时机。\n3. 通常以音频时钟作为主时钟，因为人对音频不连续更敏感。\n4. 如果视频快了，就延迟渲染。\n5. 如果视频慢了，可以适当丢帧追赶。\n\n常见策略：\n1. 音频主时钟。\n2. 视频主时钟。\n3. 外部时钟。\n\n面试重点：音画同步核心是基于时间戳和主时钟做播放调度。",
+            "difficulty": "hard",
+            "tags": [
+                "音视频",
+                "音画同步",
+                "PTS",
+                "播放器"
+            ]
+        },
+        {
+            "id": "client-044",
+            "question": "硬解码和软解码有什么区别？",
+            "answer": "硬解码和软解码都是视频解码方式。\n\n硬解码：\n1. 使用设备硬件解码器。\n2. 性能高，功耗低。\n3. 适合长时间播放和直播。\n4. 但不同机型兼容性可能不同。\n5. 对特殊编码参数支持可能有限。\n\n软解码：\n1. 使用 CPU 通过软件算法解码。\n2. 兼容性更可控。\n3. 灵活性更高。\n4. 但 CPU 占用高，耗电和发热更明显。\n5. 高分辨率视频可能解不动。\n\n选择：\n1. 普通播放优先硬解码。\n2. 硬解异常或格式特殊时回退软解。\n3. 低端机要特别关注性能和发热。\n\n面试重点：硬解省电高效但兼容性有坑，软解灵活但耗 CPU。",
+            "difficulty": "medium",
+            "tags": [
+                "音视频",
+                "硬解码",
+                "软解码",
+                "播放器"
+            ]
+        },
+        {
+            "id": "client-045",
+            "question": "H.264 中 I 帧、P 帧、B 帧分别是什么？",
+            "answer": "H.264 视频编码中常见帧类型包括 I 帧、P 帧、B 帧。\n\nI 帧：\n1. 关键帧。\n2. 不依赖其他帧，可以独立解码。\n3. 体积较大。\n4. 随机 seek、首帧播放通常需要 I 帧。\n\nP 帧：\n1. 前向预测帧。\n2. 依赖之前的 I 帧或 P 帧。\n3. 体积比 I 帧小。\n\nB 帧：\n1. 双向预测帧。\n2. 依赖前后帧。\n3. 压缩率更高。\n4. 会增加编码和播放延迟。\n\n直播低延迟场景中，可能减少或不用 B 帧，以降低延迟。\n\n面试重点：I 帧可独立解码，P/B 帧依赖其他帧，B 帧压缩高但延迟高。",
+            "difficulty": "medium",
+            "tags": [
+                "H.264",
+                "I帧",
+                "P帧",
+                "B帧",
+                "音视频"
+            ]
+        },
+        {
+            "id": "client-046",
+            "question": "什么是首帧时间？如何优化视频首帧？",
+            "answer": "首帧时间是指用户点击播放后，到第一帧画面成功展示所花费的时间。\n\n首帧耗时来源：\n1. DNS 解析。\n2. 建立连接。\n3. 请求播放地址。\n4. 拉取媒体数据。\n5. 等待关键帧。\n6. 解封装。\n7. 解码。\n8. 渲染。\n\n优化方式：\n1. DNS 预解析。\n2. 播放地址预获取。\n3. 连接预建立。\n4. CDN 就近调度。\n5. 减小 GOP，降低等待 I 帧时间。\n6. 播放器预初始化。\n7. 缓存首屏资源。\n8. 使用硬解码。\n9. 优化首包返回速度。\n\n面试重点：视频首帧优化要从网络、媒体流、播放器初始化和关键帧等待多个环节入手。",
+            "difficulty": "hard",
+            "tags": [
+                "视频播放",
+                "首帧时间",
+                "播放器优化",
+                "直播"
+            ]
+        },
+        {
+            "id": "client-047",
+            "question": "客户端如何设计图片加载框架？",
+            "answer": "图片加载框架通常包括请求、缓存、解码、变换、展示和生命周期管理。\n\n核心模块：\n1. 请求管理：封装 URL、尺寸、占位图、错误图。\n2. 内存缓存：通常用 LRU。\n3. 磁盘缓存：缓存原图或变换后的图片。\n4. 网络下载：复用连接池。\n5. 解码模块：按目标尺寸采样解码。\n6. 图片变换：圆角、裁剪、模糊等。\n7. 生命周期绑定：页面销毁时取消请求。\n8. 线程池：下载和解码分离。\n9. 防止列表图片错位。\n\n关键优化：\n1. 避免主线程解码。\n2. 避免加载超大图。\n3. 使用占位图提升体验。\n4. 列表滑动时取消无效请求。\n5. 内存缓存大小要可控。\n\n面试重点：图片框架核心是三级缓存、按需解码、请求取消和生命周期感知。",
+            "difficulty": "hard",
+            "tags": [
+                "图片加载",
+                "缓存",
+                "Bitmap",
+                "客户端架构"
+            ]
+        },
+        {
+            "id": "client-048",
+            "question": "客户端如何做离线能力？",
+            "answer": "离线能力是指在无网或弱网下，客户端仍能展示部分内容或完成部分操作。\n\n常见设计：\n1. 本地缓存首页、列表、详情等关键数据。\n2. 数据库存储结构化数据。\n3. 图片、视频、文档做磁盘缓存。\n4. 网络失败时展示缓存数据。\n5. 用户操作先写本地队列，网络恢复后同步。\n6. 使用任务状态机管理待同步、同步中、失败、成功。\n7. 处理冲突，例如本地和服务端同时修改。\n8. 给用户明确的离线提示。\n\n适用场景：\n1. 新闻阅读。\n2. 笔记。\n3. 地图。\n4. IM 消息。\n5. 表单草稿。\n\n面试重点：离线能力不是简单缓存页面，而是本地数据、同步队列、冲突处理和用户提示的完整设计。",
+            "difficulty": "hard",
+            "tags": [
+                "离线能力",
+                "缓存",
+                "数据同步",
+                "弱网"
+            ]
+        },
+        {
+            "id": "client-049",
+            "question": "客户端线上问题如何排查？",
+            "answer": "客户端线上问题排查要依赖日志、监控、埋点、崩溃堆栈和用户路径。\n\n排查步骤：\n1. 确认问题范围：影响版本、机型、系统、地区、网络环境。\n2. 查看崩溃、ANR、卡顿、错误日志。\n3. 查看用户操作路径和关键埋点。\n4. 分析是否和灰度配置、实验、服务端接口变更有关。\n5. 复现问题，尽量拿到同机型或同系统环境。\n6. 定位是客户端逻辑、服务端数据、网络、配置还是兼容性问题。\n7. 通过配置降级、热修复或发版修复。\n8. 修复后观察指标是否恢复。\n\n常见工具：\n1. Crash 平台。\n2. APM 性能监控。\n3. 日志上报系统。\n4. 埋点分析平台。\n5. 远程配置平台。\n\n面试重点：线上排查不是只看本地 logcat，而是要有完整可观测体系。",
+            "difficulty": "hard",
+            "tags": [
+                "线上排查",
+                "客户端稳定性",
+                "崩溃",
+                "监控"
+            ]
+        },
+        {
+            "id": "client-050",
+            "question": "如果让你优化一个短视频或直播 App 的客户端体验，你会从哪些方面入手？",
+            "answer": "可以从性能、稳定性、网络、播放体验、交互体验和工程治理几个方向入手。\n\n1. 启动体验：\n优化冷启动、首屏加载、初始化任务编排。\n\n2. 列表流畅度：\n优化 RecyclerView、预加载、图片和视频封面加载、减少主线程耗时。\n\n3. 播放体验：\n优化首帧时间、卡顿率、清晰度切换、预缓冲、播放器复用。\n\n4. 弱网体验：\n自适应码率、缓存兜底、失败重试、离线提示。\n\n5. 稳定性：\n降低 crash、ANR、OOM，完善灰度和降级。\n\n6. 资源消耗：\n优化内存、CPU、耗电、发热和包体积。\n\n7. 直播互动：\n降低端到端延迟，优化弹幕、点赞、礼物、连麦链路。\n\n8. 监控体系：\n建立启动、卡顿、首帧、卡顿率、崩溃率、网络错误率等指标。\n\n面试重点：大厂客户端优化不是单点优化，而是围绕核心体验指标建立系统性治理。",
+            "difficulty": "hard",
+            "tags": [
+                "客户端优化",
+                "短视频",
+                "直播",
+                "性能",
+                "稳定性"
+            ]
+        }
+    ]
+}
