@@ -288,8 +288,10 @@ export default function PracticePage() {
         <main className="flex-1 min-w-0 space-y-4">
           <QuestionCard
             question={currentQuestion}
-            index={queueIndex + 1}
-            total={queue.length}
+            bankIndex={(bank.questions.findIndex(q => q.id === currentQuestion.id) + 1) || 1}
+            bankTotal={bank.questions.length}
+            queueIndex={queueIndex + 1}
+            queueTotal={queue.length}
           />
 
           <AnswerPanel
