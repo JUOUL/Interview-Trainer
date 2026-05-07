@@ -16,9 +16,16 @@ export default function BankCard({ bank, stats, onStart, onReset }: Props) {
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
-            {bank.name}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+              {bank.name}
+            </h2>
+            {stats.known === stats.total && stats.total > 0 && (
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">
+                已完成
+              </span>
+            )}
+          </div>
           <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{bank.description}</p>
         </div>
         <span className="ml-4 text-2xl font-bold text-indigo-500 shrink-0">

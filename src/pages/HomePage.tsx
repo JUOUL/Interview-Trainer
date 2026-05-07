@@ -10,6 +10,7 @@ import {
 } from '../utils/questionBank'
 import { loadBankProgress, resetBankProgress, exportAllProgress, importProgress } from '../utils/storage'
 import { computeBankStats } from '../utils/practice'
+import { getDailyCycleKey, loadDailySession, loadDailySize, saveDailySize } from '../utils/daily'
 import BankCard from '../components/BankCard'
 import BankPlaceholderCard, { type PlaceholderKind } from '../components/BankPlaceholderCard'
 
@@ -22,6 +23,7 @@ export default function HomePage() {
   const [entries, setEntries] = useState<BankEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [importMsg, setImportMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  const [dailySize, setDailySize] = useState(() => loadDailySize())
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function loadBanks() {
@@ -100,6 +102,28 @@ export default function HomePage() {
   const errorCount = entries.filter(
     (e) => e.kind === 'placeholder' && e.errorKind !== 'missing'
   ).length
+  const totalQuestions = entries.reduce((sum, e) => {
+    if (e.kind !== 'ok') return sum
+    return sum + e.stats.total
+  }, 0)
+  const today = getDailyCycleKey()
+  const dailySession = loadDailySession()
+  const dailyCompletedToday = Boolean(
+    dailySession && dailySession.date === today && dailySession.completed
+  )
+  const hasActiveDailySession = Boolean(
+    dailySession && dailySession.date === today && !dailySession.completed && dailySession.queue.length > 0
+  )
+
+  function handleDailySizeChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value
+    if (value === '') {
+      setDailySize(10)
+      return
+    }
+    const size = saveDailySize(Number(value))
+    setDailySize(size)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -149,12 +173,63 @@ export default function HomePage() {
 
         {/* Stats bar */}
         {!loading && (
-          <div className="mb-6 flex items-center gap-4 text-sm text-gray-400">
-            <span>{BANK_IDS.length} 个题库</span>
-            {okCount > 0 && <span className="text-green-600">{okCount} 已就绪</span>}
-            {missingCount > 0 && <span className="text-gray-400">{missingCount} 待添加</span>}
-            {errorCount > 0 && <span className="text-red-500">{errorCount} 加载错误</span>}
-          </div>
+          <>
+            <div className="mb-4 bg-white border border-indigo-100 rounded-xl p-4 flex items-center gap-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-indigo-700">每日学习</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  每天随机抽取 {dailySize} 题（含已标记“知道”的题）。仅「知道」会移出今日题池，其他会放到题尾继续练。每日凌晨 04:00 刷新。
+                </p>
+                <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
+                  <span>题量</span>
+                  <input
+                    type="number"
+                    min={10}
+                    step={10}
+                    value={dailySize}
+                    onChange={handleDailySizeChange}
+                    onBlur={(e) => {
+                      const size = saveDailySize(Number(e.target.value || 30))
+                      setDailySize(size)
+                    }}
+                    className="w-20 px-2 py-1 rounded border border-indigo-200 bg-white text-gray-700"
+                  />
+                  <span>（10 的倍数）</span>
+                </div>
+                {hasActiveDailySession && (
+                  <p className="mt-1 text-[11px] text-amber-600">
+                    今日题单已生成，修改题量将于下次刷新（04:00）后生效。
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => navigate('/daily')}
+                disabled={totalQuestions === 0}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  totalQuestions === 0
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : dailyCompletedToday
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                      : 'bg-indigo-500 text-white hover:bg-indigo-600'
+                }`}
+              >
+                {totalQuestions === 0
+                  ? '暂无题目'
+                  : dailyCompletedToday
+                    ? '已完成'
+                    : hasActiveDailySession
+                      ? '继续今日学习'
+                      : '开始每日学习'}
+              </button>
+            </div>
+
+            <div className="mb-6 flex items-center gap-4 text-sm text-gray-400">
+              <span>{BANK_IDS.length} 个题库</span>
+              {okCount > 0 && <span className="text-green-600">{okCount} 已就绪</span>}
+              {missingCount > 0 && <span className="text-gray-400">{missingCount} 待添加</span>}
+              {errorCount > 0 && <span className="text-red-500">{errorCount} 加载错误</span>}
+            </div>
+          </>
         )}
 
         {/* Grid */}
