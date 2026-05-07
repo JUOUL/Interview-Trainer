@@ -4,11 +4,13 @@ import ProgressBar from './ProgressBar'
 interface Props {
   bank: QuestionBank
   stats: BankStats
+  enabled: boolean
   onStart: () => void
   onReset: () => void
+  onToggleEnabled: () => void
 }
 
-export default function BankCard({ bank, stats, onStart, onReset }: Props) {
+export default function BankCard({ bank, stats, enabled, onStart, onReset, onToggleEnabled }: Props) {
   return (
     <div
       className="bg-white border border-gray-200 rounded-xl p-6 hover:border-indigo-300 hover:shadow-sm transition-all duration-200 cursor-pointer group"
@@ -20,6 +22,11 @@ export default function BankCard({ bank, stats, onStart, onReset }: Props) {
             <h2 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
               {bank.name}
             </h2>
+            {!enabled && (
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">
+                每日已排除
+              </span>
+            )}
             {stats.known === stats.total && stats.total > 0 && (
               <span className="text-[11px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">
                 已完成
@@ -43,6 +50,17 @@ export default function BankCard({ bank, stats, onStart, onReset }: Props) {
       </div>
 
       <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
+        <button
+          className={`text-xs transition-colors px-2 py-1 rounded mr-2 ${
+            enabled ? 'text-amber-600 hover:bg-amber-50' : 'text-green-600 hover:bg-green-50'
+          }`}
+          onClick={(e) => {
+            e.stopPropagation()
+            onToggleEnabled()
+          }}
+        >
+          {enabled ? '每日停用' : '每日启用'}
+        </button>
         <button
           className="text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1 rounded hover:bg-red-50"
           onClick={(e) => {

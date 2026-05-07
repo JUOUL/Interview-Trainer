@@ -4,6 +4,7 @@ import type { Question, QuestionBank, QuestionStatus } from '../types/question'
 import { BANK_IDS } from '../data/banks'
 import { fetchQuestionBank } from '../utils/questionBank'
 import { updateQuestionStatus } from '../utils/storage'
+import { loadEnabledBankMap } from '../utils/bankSettings'
 import {
   collectAllQuestionRefs,
   createDailySession,
@@ -44,9 +45,12 @@ export default function DailyPracticePage() {
     async function init() {
       setLoading(true)
       try {
+        const enabledMap = loadEnabledBankMap(BANK_IDS)
         const banks = (
           await Promise.allSettled(BANK_IDS.map((id) => fetchQuestionBank(id)))
-        ).flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
+        )
+          .flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
+          .filter((bank) => enabledMap[bank.id] !== false)
 
         const allRefs = collectAllQuestionRefs(banks)
         const map: Record<string, DailyQuestion> = {}

@@ -11,6 +11,7 @@ import {
 import { loadBankProgress, resetBankProgress, exportAllProgress, importProgress } from '../utils/storage'
 import { computeBankStats } from '../utils/practice'
 import { getDailyCycleKey, loadDailySession, loadDailySize, saveDailySize } from '../utils/daily'
+import { loadEnabledBankMap, setBankEnabled } from '../utils/bankSettings'
 import BankCard from '../components/BankCard'
 import BankPlaceholderCard, { type PlaceholderKind } from '../components/BankPlaceholderCard'
 
@@ -24,6 +25,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [importMsg, setImportMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [dailySize, setDailySize] = useState(() => loadDailySize())
+  const [enabledMap, setEnabledMap] = useState(() => loadEnabledBankMap(BANK_IDS))
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function loadBanks() {
@@ -104,6 +106,7 @@ export default function HomePage() {
   ).length
   const totalQuestions = entries.reduce((sum, e) => {
     if (e.kind !== 'ok') return sum
+    if (!enabledMap[e.bank.id]) return sum
     return sum + e.stats.total
   }, 0)
   const today = getDailyCycleKey()
@@ -123,6 +126,12 @@ export default function HomePage() {
     }
     const size = saveDailySize(Number(value))
     setDailySize(size)
+  }
+
+  function handleToggleBankEnabled(bankId: string) {
+    const current = enabledMap[bankId] ?? true
+    const next = setBankEnabled(bankId, !current, BANK_IDS)
+    setEnabledMap(next)
   }
 
   return (
@@ -178,7 +187,7 @@ export default function HomePage() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-indigo-700">每日学习</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  每天随机抽取 {dailySize} 题（含已标记“知道”的题）。仅「知道」会移出今日题池，其他会放到题尾继续练。每日凌晨 04:00 刷新。
+                  每天仅从「已启用」题库随机抽取 {dailySize} 题（含已标记“知道”的题）。仅「知道」会移出今日题池，其他会放到题尾继续练。每日凌晨 04:00 刷新。
                 </p>
                 <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
                   <span>题量</span>
@@ -201,6 +210,9 @@ export default function HomePage() {
                     今日题单已生成，修改题量将于下次刷新（04:00）后生效。
                   </p>
                 )}
+                <p className="mt-1 text-[11px] text-gray-400">
+                  题库卡片上的「每日启用/停用」仅影响每日题库，不影响普通刷题。
+                </p>
               </div>
               <button
                 onClick={() => navigate('/daily')}
@@ -256,8 +268,10 @@ export default function HomePage() {
                   key={entry.bank.id}
                   bank={entry.bank}
                   stats={entry.stats}
+                  enabled={enabledMap[entry.bank.id] ?? true}
                   onStart={() => navigate(`/practice/${entry.bank.id}`)}
                   onReset={() => handleReset(entry.bank.id)}
+                  onToggleEnabled={() => handleToggleBankEnabled(entry.bank.id)}
                 />
               ) : (
                 <BankPlaceholderCard
