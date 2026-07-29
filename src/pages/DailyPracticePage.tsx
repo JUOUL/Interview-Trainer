@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { Question, QuestionBank, QuestionStatus } from '../types/question'
 import { BANK_IDS } from '../data/banks'
 import { fetchQuestionBank } from '../utils/questionBank'
@@ -30,6 +30,11 @@ function makeKey(ref: DailyQuestionRef): string {
 
 export default function DailyPracticePage() {
   const navigate = useNavigate()
+  // 秋招模块「开始面试准备」跳转时携带的轻量上下文（可选，不影响每日学习逻辑）
+  const [searchParams] = useSearchParams()
+  const prepCompany = searchParams.get('company')
+  const prepRole = searchParams.get('role')
+  const prepStage = searchParams.get('stage')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [session, setSession] = useState<DailySession | null>(null)
@@ -241,6 +246,18 @@ export default function DailyPracticePage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-6 py-6 space-y-4">
+        {prepCompany && (
+          <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 flex items-center justify-between gap-2">
+            <span>
+              面试准备：<span className="font-medium">{prepCompany}</span>
+              {prepStage && ` · ${prepStage}`}
+              {prepRole && ` · ${prepRole}`}
+            </span>
+            <button onClick={() => navigate('/recruitment')} className="text-amber-600 hover:underline shrink-0">
+              返回秋招
+            </button>
+          </div>
+        )}
         <div className="text-sm text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg px-4 py-2">
           当前题库：{current.bank.name}
         </div>

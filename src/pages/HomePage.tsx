@@ -146,6 +146,12 @@ export default function HomePage() {
 
           <div className="flex items-center gap-2">
             <button
+              onClick={() => navigate('/recruitment')}
+              className="text-sm text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-1.5 rounded-lg transition-colors font-medium"
+            >
+              2027秋招
+            </button>
+            <button
               onClick={handleExport}
               className="text-sm text-gray-500 hover:text-gray-800 px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-white transition-colors"
             >
